@@ -11,10 +11,10 @@ from flask_babel import Babel
 from .common import rest_service
 from .config import DefaultConfig
 from .extensions import redis_cache, db
+from jsonschema import ValidationError
 
 # For import *
 __all__ = ['create_app']
-
 
 DEFAULT_BLUEPRINTS = (
     rest_service,
@@ -58,12 +58,12 @@ def configure_extensions(app):
     # flask-sqlalchemy
     db.init_app(app)
     print('Connect with Mysql successfully')
-    
+
     # Redis
     redis_cache.init_app(app)
     print('Init Redis cache successfully')
-    #redis_user_info.init_app(app, config_prefix='REDIS_USERS')
-    #print('Init Redis user info successfully')
+    # redis_user_info.init_app(app, config_prefix='REDIS_USERS')
+    # print('Init Redis user info successfully')
 
     # Flask Babel
     babel = Babel(app)
@@ -87,7 +87,7 @@ def configure_blueprints(app, blueprints):
     """Configure blueprints in views."""
 
     for blueprint in blueprints:
-        app.register_blueprint(blueprint)
+        app.register_blueprint(blueprint, url_prefix="{}/{}".format("/v1/base", blueprint.url_prefix))
 
 
 def configure_template_filters(app):
@@ -114,12 +114,39 @@ def configure_hook(app):
 def configure_error_handlers(app):
     @app.errorhandler(403)
     def forbidden_page(error):
-        return jsonify(msg="forbidden"), 403
+        return jsonify({
+            'status': 0,
+            'error_code': 'ERROR_METADATA_FORBIDDEN',
+            'msg': 'forbidden',
+            'data': {}
+        }), 403
 
     @app.errorhandler(404)
     def page_not_found(error):
-        return jsonify(msg="notfound"), 404
+        return jsonify({
+            'status': 0,
+            'error_code': 'ERROR_METADATA_NOT_FOUND',
+            'msg': 'notfound',
+            'data': {}
+        }), 404
 
     @app.errorhandler(500)
     def server_error_page(error):
-        return jsonify(msg="server error"), 500
+        return jsonify({
+            'status': 0,
+            'error_code': 'ERROR_METADATA_SERVER_ERROR',
+            'msg': 'server error',
+            'data': {}
+        }), 500
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        if isinstance(error.description, ValidationError):
+            original_error = error.description
+            return jsonify({
+                'status': 0,
+                'error_code': 'ERROR_METADATA_VALIDATION',
+                'msg': original_error.message,
+                'data': {}
+            }), 400
+        return error

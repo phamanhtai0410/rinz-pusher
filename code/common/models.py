@@ -4,6 +4,7 @@ from sqlalchemy import Column
 from ..extensions import db
 from ..utils import get_current_time
 
+
 class Logs(db.Model):
     """
     CREATE TABLE logs(id INT AUTO_INCREMENT PRIMARY KEY, info VARCHAR(500), created_time DATETIME)

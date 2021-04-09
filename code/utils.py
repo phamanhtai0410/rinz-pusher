@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
     Utils has nothing to do with models and views.
@@ -16,7 +15,7 @@ from bson import ObjectId
 from flask import make_response
 import msgpack
 
-from .extensions import redis_user_info, redis_cache
+from .extensions import redis_cluster, redis_cache
 
 
 def get_current_time():
@@ -164,15 +163,15 @@ def send_telegram_message(token_id, chat_id, message):
 
 def json_decode_hook(obj):
     if '__datetime__' in obj:
-        return datetime.strptime(obj['as_str'].decode(), "%Y%m%dT%H:%M:%S.%f")
+        return datetime.strptime(obj['as_str'], "%Y%m%dT%H:%M:%S.%f")
     if b'__datetime__' in obj:
-        return datetime.strptime(obj[b'as_str'].decode(), "%Y%m%dT%H:%M:%S.%f")
+        return datetime.strptime(obj[b'as_str'], "%Y%m%dT%H:%M:%S.%f")
     return obj
 
 
 def json_encode_hook(obj):
     if isinstance(obj, datetime):
-        obj = {'__datetime__': True, 'as_str': obj.strftime("%Y%m%dT%H:%M:%S.%f").encode()}
+        obj = {'__datetime__': True, 'as_str': obj.strftime("%Y%m%dT%H:%M:%S.%f")}
 
     if isinstance(obj, ObjectId):
         obj = str(obj)
@@ -209,7 +208,7 @@ def jsonify_dict(dct):
     return json.dumps(dct)
 
 
-def log_any(x, *args,**kwargs):
+def log_any(x, *args, **kwargs):
     '''
     Log any message to json format.
     '''
@@ -222,7 +221,6 @@ def log_any(x, *args,**kwargs):
     if args:
         msg['args'] = json.dumps(args)
     if kwargs:
-        #kwargs.setdefault('default',lambda x:getattr(x,'__dict__',dict((k,getattr(x,k) if not callable(getattr(x,k)) else repr(getattr(x,k))) for k in dir(x) if not (k.startswith('__') or isinstance(getattr(x,k),x.__class__)))))
         msg['kwargs'] = json.dumps(kwargs)
     print(msg)
     return json.dumps(msg)
@@ -242,10 +240,11 @@ def convert_to_int(string):
 
 
 def save_token_redis(token):
-    redis_user_info.setex(token, 259200, 1)
+    redis_cluster.setex(token, 259200, 1)
     return True
 
-#======= Dump/Load json scripts =========
+
+# ======= Dump/Load json scripts =========
 
 def msgpack_decode_hook(obj):
     if b'__datetime__' in obj:
@@ -283,6 +282,19 @@ def get_redis_cache(key):
     :return:
     """
     output = redis_cache.get(key)
+    if output:
+        return load_data(output, json.loads)
+
+    return None
+
+
+def get_redis_cluster(key):
+    """
+    Get value redis by single key.
+    :param key:
+    :return:
+    """
+    output = redis_cluster.get(key)
     if output:
         return load_data(output, json.loads)
 
