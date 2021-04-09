@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
-import os
-import traceback
 
 import sentry_sdk
 from celery import Celery
 from flask import Flask
 from sentry_sdk.integrations.flask import FlaskIntegration
-from sentry_sdk import capture_message, capture_exception
+from sentry_sdk import capture_message
 
 from .config import DefaultConfig
-from pymodm import connect
-from .extensions import redis_cache
+from .extensions import redis_cache, db
 
 
 def create_app(config=None, app_name=None, blueprints=None):
@@ -40,9 +37,9 @@ def configure_app(app, config=None):
 
 
 def configure_extensions(app):
-    # MongoDB
-    connect(DefaultConfig.MONGODB_URI, connect=False)
-    print('Connect with MongoDB successfully')
+    # flask-sqlalchemy
+    db.init_app(app)
+    print('Connect with Mysql successfully')
 
     # Redis
     redis_cache.init_app(app)

@@ -1,52 +1,26 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from bson import ObjectId
-from pymodm import fields
-from ..base.model import Base
 
+from sqlalchemy import Column
+from ..extensions import db
+from ..utils import get_current_time
 
-class Logger(Base):
+class Logs(db.Model):
     """
-    Example Logger model
-    """
-
-    class Meta:
-        collection_name = 'logger'
-        final = True
-
-    _id = fields.ObjectIdField(primary_key=True)
-    event = fields.CharField(default='', blank=True)
-    description = fields.CharField(default='', blank=True)
-
-    @staticmethod
-    def add(payload):
-        return Logger(_id=ObjectId(), event=payload['event'], description=payload['description'], 
-            createdDate=datetime.utcnow(), updatedDate=datetime.utcnow()).save()
-
-
-class Voter(Base):
-    """
-    Example Logger model
+    CREATE TABLE logs(id INT AUTO_INCREMENT PRIMARY KEY, info VARCHAR(500), created_time DATETIME)
     """
 
-    class Meta:
-        collection_name = 'voter'
-        final = True
+    __tablename__ = 'logs'
+    LOG_LENGTH = 500
 
-    _id = fields.ObjectIdField(primary_key=True)
-    userId = fields.CharField(default='', blank=False)
-    postId = fields.CharField(default='', blank=False)
-    vote = fields.IntegerField(default='', blank=True)
-    kill = fields.IntegerField(default='', blank=True)
-    status = fields.BooleanField(default=True, blank=True)
+    id = Column(db.Integer, primary_key=True)
+    info = Column(db.String(LOG_LENGTH), nullable=False, unique=True)
+    created_time = Column(db.DateTime, default=get_current_time)
 
-    @staticmethod
-    def add(payload):
-        return Voter(_id=ObjectId(), userId=payload['userId'], postId=payload['postId'],
-                      vote=payload['vote'], kill=payload['kill'], createdDate=datetime.utcnow(),
-                      updatedDate=datetime.utcnow()).save()
-
-
-    @staticmethod
-    def get_voter(user_id, post_id):
-        return Voter.find({'userId': user_id, 'postId': post_id})
+    @classmethod
+    def save(cls, info):
+        # Add record with phone, otp, type
+        log = Logs()
+        log.info = info
+        log.created_time = get_current_time()
+        db.session.add(log)
+        db.session.commit()

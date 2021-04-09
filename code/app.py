@@ -8,17 +8,15 @@ from sentry_sdk import capture_exception, capture_message
 from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, request, jsonify
 from flask_babel import Babel
-from .common import rest_common, rest_service
+from .common import rest_service
 from .config import DefaultConfig
-from .extensions import redis_cache, redis_user_info
-from pymodm import connect
+from .extensions import redis_cache, db
 
 # For import *
 __all__ = ['create_app']
 
 
 DEFAULT_BLUEPRINTS = (
-    rest_common,
     rest_service,
 )
 
@@ -57,9 +55,9 @@ def configure_app(app, config=None):
 
 
 def configure_extensions(app):
-    # MongoDB
-    connect(DefaultConfig.MONGODB_URI, connect=False)
-    print('Connect with MongoDB successfully')
+    # flask-sqlalchemy
+    db.init_app(app)
+    print('Connect with Mysql successfully')
     
     # Redis
     redis_cache.init_app(app)

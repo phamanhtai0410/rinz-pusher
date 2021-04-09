@@ -41,6 +41,10 @@ class DefaultConfig(BaseConfig):
     CELERY_ENABLE_UTC = False
     CELERY_TIMEZONE = 'Asia/Ho_Chi_Minh'
     SENTRY_DSN = os.getenv('SENTRY_DSN')
-    MONGODB_URI = os.getenv('MONGODB_URI')
+
+    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI =  os.getenv('SQLALCHEMY_DATABASE_URI')
+
     REDIS_URL = os.getenv('REDIS_URL')
     REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES'))

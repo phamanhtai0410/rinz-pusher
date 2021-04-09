@@ -3,15 +3,15 @@ version: '3'
 services: 
   backend:
     # Name the service container
-    image: tiktik-vote-kill-service
-    container_name: tiktik-vote-kill-service
+    image: base-service
+    container_name: base-service
     build: ./
     restart: on-failure
     volumes: 
-      - ./:/webapps/tiktik-service
+      - ./:/webapps/base-service
       - /var/log/apps/:/var/log/apps/
     ports:
-      - 5055:5005
+      - 5057:5005
     #env_file:
     # - ./local.env
     networks:

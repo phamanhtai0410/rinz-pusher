@@ -18,3 +18,6 @@ JUST RUN: `> docker-compose up -d --build`
 
 ## Container env config:
 ```/webapps/tiktik-service/.env```
+
+## Init table logs
+```CREATE TABLE logs(id INT AUTO_INCREMENT PRIMARY KEY, info VARCHAR(500), created_time DATETIME)```
