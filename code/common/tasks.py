@@ -9,17 +9,3 @@ from .models import Logs
 def health_check_task():
     capture_message('Health check task')
     return "Health check task finished successfully"
-
-
-@celery.task(name='voter.add_task', rate_limit='20/s')
-def add_task(payload):
-    """
-    Add user deciding to db.
-    :param payload:
-    :return:
-    """
-
-    Logs.save(payload['info'])
-
-    return "Done"
-
