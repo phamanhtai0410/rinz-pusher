@@ -47,3 +47,8 @@ class DefaultConfig(BaseConfig):
 
     REDIS_URL = os.getenv('REDIS_URL')
     REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES'))
+
+
+    FPT_CLIENT_ID_CMS = os.getenv('FPT_CLIENT_ID_CMS')
+    FPT_CLIENT_SECRET_CMS = os.getenv('FPT_CLIENT_SECRET_CMS')
+    FPT_URL_CMS = os.getenv('FPT_URL_CMS')
