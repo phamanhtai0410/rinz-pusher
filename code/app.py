@@ -10,14 +10,18 @@ from flask import Flask, request, jsonify
 from flask_babel import Babel
 from .common import rest_service
 from .config import DefaultConfig
-from .extensions import redis_cache, db
+from .extensions import redis_cache, db, jobs
 from jsonschema import ValidationError
+from .sms import rest_sms
 
 # For import *
 __all__ = ['create_app']
 
+from .shedule import get_token_for_fpt_sms
+
 DEFAULT_BLUEPRINTS = (
     rest_service,
+    rest_sms,
 )
 
 
@@ -39,6 +43,17 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_logging_level()
 
     return app
+
+
+def configure_jobs(app):
+    get_token_for_fpt_sms()
+    jobs.add_job(
+        get_token_for_fpt_sms,
+        trigger='interval',
+        # minute=1,
+        hour=1
+    )
+    jobs.start()
 
 
 def configure_app(app, config=None):
@@ -73,6 +88,7 @@ def configure_extensions(app):
         sentry_sdk.init(
             dsn=DefaultConfig.SENTRY_DSN,
             integrations=[FlaskIntegration()],
+            server_name=DefaultConfig.PROJECT
         )
 
         capture_message('{} starts'.format(DefaultConfig.PROJECT))
@@ -87,7 +103,7 @@ def configure_blueprints(app, blueprints):
     """Configure blueprints in views."""
 
     for blueprint in blueprints:
-        app.register_blueprint(blueprint, url_prefix="{}/{}".format("/v1/base", blueprint.url_prefix))
+        app.register_blueprint(blueprint, url_prefix="{}/{}".format("/v1/3th", blueprint.url_prefix))
 
 
 def configure_template_filters(app):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask_redis import Redis
-
+from apscheduler.schedulers.background import BackgroundScheduler
 from rediscluster import RedisCluster
 from .config import DefaultConfig
 
@@ -14,3 +14,4 @@ redis_cluster = RedisCluster(startup_nodes=DefaultConfig.REDIS_USERS_STARTUP_NOD
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+jobs = BackgroundScheduler(daemon=True)

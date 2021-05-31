@@ -8,7 +8,7 @@ load_dotenv()
 
 
 class BaseConfig(object):
-    PROJECT = "tiktik-service"
+    PROJECT = "the-cua-tui-3th"
 
     PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -30,9 +30,10 @@ class DefaultConfig(BaseConfig):
     CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
     CELERY_TASK_RESULT_EXPIRES = os.getenv('CELERY_TASK_RESULT_EXPIRES')
     CELERY_TASK_RESULT_EXPIRES = int(CELERY_TASK_RESULT_EXPIRES) if CELERY_TASK_RESULT_EXPIRES else 600
-    CELERY_DEFAULT_QUEUE = 'voter_celery'
+    CELERY_DEFAULT_QUEUE = 'the-cua-tui-3th'
     CELERY_ROUTES = {
-        'base.tasks.health_check': {'queue': 'base_health_check'},
+        'base.tasks.health_check': {'queue': 'the-cua-tui-3th'},
+        'connect_3th_send_sms': {'queue': 'the-cua-tui-3th'}
     }
     CELERY_TRACK_STARTED = "True"
 

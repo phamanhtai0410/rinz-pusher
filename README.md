@@ -1,4 +1,4 @@
-# **Tiktik Service**
+# **the-cua-tui Service**
 ## Environment
 - docker
 - docker-compose
@@ -17,7 +17,7 @@ JUST RUN: `> docker-compose up -d --build`
 ```curl -i http://localhost:5055/common/health_check```
 
 ## Container env config:
-```/webapps/tiktik-service/.env```
+```/webapps/the-cua-tui-service/.env```
 
 ## Init table logs
 ```CREATE TABLE logs(id INT AUTO_INCREMENT PRIMARY KEY, info VARCHAR(500), created_time DATETIME)```

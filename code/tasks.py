@@ -51,6 +51,7 @@ def configure_extensions(app):
             dsn=DefaultConfig.SENTRY_DSN,
             integrations=[FlaskIntegration()],
             debug=True,
+            server_name=DefaultConfig.PROJECT
         )
 
         capture_message('{} celery starts'.format(DefaultConfig.PROJECT))

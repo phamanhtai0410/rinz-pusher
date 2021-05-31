@@ -15,7 +15,6 @@ Flask-Babel==2.0.0
 Flask-Cors==3.0.8
 Flask-Script==2.0.6
 flask-expects-json==1.5.0
-Flask-SQLAlchemy==2.5.1
 flower==0.9.4
 gevent==21.1.2
 greenlet==1.0.0
@@ -33,8 +32,7 @@ protobuf==3.13.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
-pymodm==0.4.3
-pymongo==3.11.3
+python-dateutil==2.8.1
 python-dotenv==0.16.0
 python-slugify==4.0.0
 pytz==2020.1
@@ -48,8 +46,13 @@ text-unidecode==1.3
 tornado==6.0.4
 uritemplate==3.0.1
 urllib3==1.25.10
-uWSGI==2.0.19.1
 vine==5.0.0
 Werkzeug==1.0.0
 zipp==3.3.0
+cryptography==3.3.1
+gunicorn==20.1.0
+bcrypt==3.2.0
 SQLAlchemy==1.4.6
+Flask-SQLAlchemy==2.5.1
+phonenumbers==8.12.23
+apscheduler==3.6.3

@@ -5,7 +5,6 @@ from flask_expects_json import expects_json
 
 from code.utils import make_cross_domain_response, log_any
 from ..constants import AppConstants
-from .tasks import add_task
 
 rest_service = Blueprint('rest_service', __name__, url_prefix='/common')
 
@@ -17,7 +16,6 @@ def health_check():
     payload = {
         "info": "log health_check"
     }
-    add_task(payload)
     return make_cross_domain_response({'status': AppConstants.STATUS_OK, 'msg': 'TheCuaTui Health Check base service',
                                        'error_code': AppConstants.NOT_E}, 200)
 
