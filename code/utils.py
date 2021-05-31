@@ -11,7 +11,6 @@ import json
 import requests
 from datetime import datetime
 
-from bson import ObjectId
 from flask import make_response
 import msgpack
 
@@ -173,9 +172,6 @@ def json_encode_hook(obj):
     if isinstance(obj, datetime):
         obj = {'__datetime__': True, 'as_str': obj.strftime("%Y%m%dT%H:%M:%S.%f")}
 
-    if isinstance(obj, ObjectId):
-        obj = str(obj)
-
     return obj
 
 
@@ -202,9 +198,6 @@ def jsonify_dict(dct):
     for k, v in dct.items():
         if isinstance(v, datetime):
             dct[k] = v.isoformat()
-        elif isinstance(v, ObjectId):
-            dct[k] = str(v)
-
     return json.dumps(dct)
 
 
@@ -255,9 +248,6 @@ def msgpack_decode_hook(obj):
 def msgpack_encode_hook(obj):
     if isinstance(obj, datetime):
         obj = obj.strftime("%Y-%m-%dT%H:%M:%S.%f").encode()
-
-    if isinstance(obj, ObjectId):
-        obj = str(obj).decode('utf-8')
 
     return obj
 
