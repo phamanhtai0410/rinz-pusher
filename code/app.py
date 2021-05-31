@@ -4,6 +4,8 @@ import os
 import traceback
 
 import sentry_sdk
+from apscheduler.triggers.combining import AndTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 from sentry_sdk import capture_exception, capture_message
 from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, request, jsonify
@@ -47,11 +49,10 @@ def create_app(config=None, app_name=None, blueprints=None):
 
 def configure_jobs(app):
     get_token_for_fpt_sms()
+    trigger = AndTrigger([IntervalTrigger(hours=1)])
     jobs.add_job(
         get_token_for_fpt_sms,
-        trigger='interval',
-        # minute=1,
-        hour=1
+        trigger
     )
     jobs.start()
 

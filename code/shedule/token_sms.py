@@ -11,6 +11,7 @@ from code.extensions import redis_cluster
 
 def get_token_for_fpt_sms():
     try:
+        print('____________ start run jobs __________')
         session_id = str(uuid.uuid4())
         payload = {
             "grant_type": "client_credentials",
