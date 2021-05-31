@@ -19,7 +19,7 @@ from .sms import rest_sms
 # For import *
 __all__ = ['create_app']
 
-from .shedule import get_token_for_fpt_sms
+from .schedule import get_token_for_fpt_sms
 
 DEFAULT_BLUEPRINTS = (
     rest_service,
