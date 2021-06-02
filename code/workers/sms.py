@@ -61,19 +61,19 @@ def send_phone_task(phone, code, user_id):
         }
         print(data)
         url = "https://app.sms.fpt.net/api/push-brandname-otp"  # DefaultConfig.SMS_URL
-        # response = requests.request("POST", url,
-        #                             data=payload,
-        #                             headers=headers,
-        #                             verify=False)
-        # print('response.text', response.text)
-        # HookLog.add({
-        #     'from_service': 'id',
-        #     'to_service': 'sms_fpt',
-        #     'data': data,
-        #     'response': response.text,
-        #     'headers': headers,
-        #     'url': url
-        # })
+        response = requests.request("POST", url,
+                                    data=payload,
+                                    headers=headers,
+                                    verify=False)
+        print('response.text', response.text)
+        HookLog.add({
+            'from_service': 'id',
+            'to_service': 'sms_fpt',
+            'data': data,
+            'response': response.text,
+            'headers': headers,
+            'url': url
+        })
     except Exception as e:
         capture_exception(e)
         traceback.print_exception(e)
