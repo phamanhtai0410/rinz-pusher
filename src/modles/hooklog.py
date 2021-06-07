@@ -1,14 +1,14 @@
 from datetime import datetime
 
-from code.extensions import db
+from src.extensions import db
 
 from sqlalchemy import Column
 
-from code.modles.base import JsonType
-from code.utils import get_current_time
+from src.modles.base import JsonType, Base
+from src.utils import get_current_time
 
 
-class HookLog(db.Model):
+class HookLog(db.Model, Base):
     """
     Example Logger model
     """
@@ -37,7 +37,5 @@ class HookLog(db.Model):
             'created_date': datetime.utcnow(),
         }
         hook_log = HookLog(**payload)
-        db.session.add(hook_log)
-        db.session.commit()
-        return hook_log
+        return HookLog.insert(hook_log)
 

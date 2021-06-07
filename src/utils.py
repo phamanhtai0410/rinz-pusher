@@ -12,8 +12,8 @@ import requests
 from datetime import datetime
 
 from flask import make_response
-import msgpack
-
+from sentry_sdk import capture_exception
+from traceback import print_exception
 from .extensions import redis_cluster, redis_cache
 
 
@@ -116,14 +116,15 @@ def replace_special_character(text):
     return s
 
 
-def make_response_dict(status, error_code, msg, data):
-    dict = {
-        'status': int(status),
-        'error_code': int(error_code),
-        'msg': msg,
-        'data': data
-    }
-    return dict
+def json_encode_response(obj):
+    if isinstance(obj, datetime):
+        obj = obj.timestamp()
+    return obj
+
+
+def make_response_dict(data):
+    dict_string = json.dumps(data, default=json_encode_response)
+    return json.loads(dict_string)
 
 
 def make_cross_domain_response(data, response_code=200, extra_data=[]):
@@ -134,7 +135,7 @@ def make_cross_domain_response(data, response_code=200, extra_data=[]):
     #     response = make_response(jsonify(data), response_code)
     #     response.set_etag(etag)
     # set headers for response CORS
-
+    data = make_response_dict(data)
     response = make_response(data, response_code)
     # response = make_response(jsonify(data), response_code)
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -148,16 +149,6 @@ def make_cross_domain_response(data, response_code=200, extra_data=[]):
             if 'name' in d and 'value' in d:
                 response.headers[d['name']] = d['value']
     return response
-
-
-def send_telegram_message(token_id, chat_id, message):
-    payload = {
-        'chat_id': chat_id,
-        'text': message,
-        'parse_mode': 'HTML'
-    }
-    return requests.post('https://api.telegram.org/bot{token}/sendMessage'.format(token=token_id), data=payload,
-                         verify=False).content
 
 
 def json_decode_hook(obj):
@@ -205,18 +196,19 @@ def log_any(x, *args, **kwargs):
     '''
     Log any message to json format.
     '''
-
-    msg = {
-        'msg': x,
-    }
-
-    print()
-    if args:
-        msg['args'] = json.dumps(args)
-    if kwargs:
-        msg['kwargs'] = json.dumps(kwargs)
-    print(msg)
-    return json.dumps(msg)
+    try:
+        msg = {
+            'msg': x,
+        }
+        print()
+        if args:
+            msg['args'] = json.dumps(args, default=json_encode_hook)
+        if kwargs:
+            msg['kwargs'] = json.dumps(args, default=json_encode_hook)
+        print(msg)
+    except Exception as e:
+        capture_exception(e)
+        print_exception(e)
 
 
 def convert_to_int(string):

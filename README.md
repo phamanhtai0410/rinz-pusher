@@ -11,7 +11,7 @@
 JUST RUN: `> docker-compose up -d --build`
 
 ### Run celery
-```celery --app code.tasks worker -Q celery -l DEBUG -c 4```
+```celery --app src.tasks worker -Q celery -l DEBUG -c 4```
 
 ## Health check
 ```curl -i http://localhost:5055/common/health_check```

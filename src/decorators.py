@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 from functools import wraps
-from code.utils import json_encode_hook, json_decode_hook, jsonify_dict, log_any
-from code.extensions import redis_cache, redis_cluster
+from src.utils import json_encode_hook, json_decode_hook, jsonify_dict, log_any
+from src.extensions import redis_cache, redis_cluster
 from flask import request, abort, jsonify
 from sentry_sdk import capture_exception
 import jwt

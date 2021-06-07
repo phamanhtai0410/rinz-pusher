@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from gevent import monkey
+
 monkey.patch_all()
 
-from code import create_app
+from src import create_app
 from flask_script import Manager
 
 app = create_app()
@@ -14,7 +15,7 @@ manager = Manager(app)
 def run():
     """Run in local machine."""
 
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=False)
 
 
 manager.add_option('-c', '--config',

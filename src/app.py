@@ -14,16 +14,15 @@ from .common import rest_service
 from .config import DefaultConfig
 from .extensions import redis_cache, db, jobs
 from jsonschema import ValidationError
-from .sms import rest_sms
 
 # For import *
 __all__ = ['create_app']
 
-from .schedule import get_token_for_fpt_sms
+from .schedule import name_job
+from .utils import log_any
 
 DEFAULT_BLUEPRINTS = (
     rest_service,
-    rest_sms,
 )
 
 
@@ -44,14 +43,15 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_error_handlers(app)
     configure_logging_level()
     configure_jobs(app)
-    return app
+    with app.app_context():
+        db.create_all()  # Create sql tables for our data models
+        return app
 
 
 def configure_jobs(app):
-    get_token_for_fpt_sms()
     trigger = AndTrigger([IntervalTrigger(hours=1)])
     jobs.add_job(
-        get_token_for_fpt_sms,
+        name_job(),
         trigger
     )
     jobs.start()
@@ -73,14 +73,11 @@ def configure_app(app, config=None):
 def configure_extensions(app):
     # flask-sqlalchemy
     db.init_app(app)
-    print('Connect with Mysql successfully')
+    log_any('Connect with Mysql successfully')
 
     # Redis
     redis_cache.init_app(app)
-    print('Init Redis cache successfully')
-    # redis_user_info.init_app(app, config_prefix='REDIS_USERS')
-    # print('Init Redis user info successfully')
-
+    log_any('Init Redis cache successfully')
     # Flask Babel
     babel = Babel(app)
 
@@ -104,7 +101,7 @@ def configure_blueprints(app, blueprints):
     """Configure blueprints in views."""
 
     for blueprint in blueprints:
-        app.register_blueprint(blueprint, url_prefix="{}/{}".format("/v1/3th", blueprint.url_prefix))
+        app.register_blueprint(blueprint, url_prefix="{}/{}".format(app.config.get('PREFIX'), blueprint.url_prefix))
 
 
 def configure_template_filters(app):
@@ -133,7 +130,7 @@ def configure_error_handlers(app):
     def forbidden_page(error):
         return jsonify({
             'status': 0,
-            'error_code': 'ERROR_METADATA_FORBIDDEN',
+            'error_code': 'ERROR_FORBIDDEN',
             'msg': 'forbidden',
             'data': {}
         }), 403
@@ -142,7 +139,7 @@ def configure_error_handlers(app):
     def page_not_found(error):
         return jsonify({
             'status': 0,
-            'error_code': 'ERROR_METADATA_NOT_FOUND',
+            'error_code': 'ERROR_NOT_FOUND',
             'msg': 'notfound',
             'data': {}
         }), 404
@@ -151,7 +148,7 @@ def configure_error_handlers(app):
     def server_error_page(error):
         return jsonify({
             'status': 0,
-            'error_code': 'ERROR_METADATA_SERVER_ERROR',
+            'error_code': 'ERROR_SERVER_ERROR',
             'msg': 'server error',
             'data': {}
         }), 500
@@ -162,7 +159,7 @@ def configure_error_handlers(app):
             original_error = error.description
             return jsonify({
                 'status': 0,
-                'error_code': 'ERROR_METADATA_VALIDATION',
+                'error_code': 'ERROR_VALIDATION',
                 'msg': original_error.message,
                 'data': {}
             }), 400

@@ -8,6 +8,7 @@ from sentry_sdk import capture_message
 
 from .config import DefaultConfig
 from .extensions import redis_cache, db
+from .utils import log_any
 
 
 def create_app(config=None, app_name=None, blueprints=None):
@@ -39,11 +40,11 @@ def configure_app(app, config=None):
 def configure_extensions(app):
     # flask-sqlalchemy
     db.init_app(app)
-    print('Connect with Mysql successfully')
+    log_any('Connect with Mysql successfully')
 
     # Redis
     redis_cache.init_app(app)
-    print('Init Redis cache successfully')
+    log_any('Init Redis cache successfully')
 
     # Sentry
     if DefaultConfig.SENTRY_DSN:
@@ -62,7 +63,7 @@ def create_celery_app(app=None):
     celery = Celery(__name__, broker=app.config['CELERY_BROKER_URL'])
     celery.conf.update(app.config)
     TaskBase = celery.Task
-    print('Init Celery tasks app')
+    log_any('Init Celery tasks app')
 
     class ContextTask(TaskBase):
         abstract = True

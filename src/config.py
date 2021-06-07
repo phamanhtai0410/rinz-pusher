@@ -21,7 +21,7 @@ class BaseConfig(object):
 
 class DefaultConfig(BaseConfig):
     DEBUG = True
-
+    PREFIX = '/v1/template'
     # Flask-babel: http://pythonhosted.org/Flask-Babel/
     ACCEPT_LANGUAGES = ['vi']
     BABEL_DEFAULT_LOCALE = 'en'
@@ -47,7 +47,6 @@ class DefaultConfig(BaseConfig):
 
     REDIS_URL = os.getenv('REDIS_URL')
     REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES'))
-
 
     FPT_CLIENT_ID_CMS = os.getenv('FPT_CLIENT_ID_CMS')
     FPT_CLIENT_SECRET_CMS = os.getenv('FPT_CLIENT_SECRET_CMS')
