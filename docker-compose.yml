@@ -8,7 +8,7 @@ services:
     build: ./
     restart: on-failure
     volumes: 
-      - ./:/webapps/base-service
+      - ./:/webapps/the-cua-tui-service
       - /var/log/apps/:/var/log/apps/
     ports:
       - 5011:5005
