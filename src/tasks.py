@@ -3,6 +3,7 @@
 import sentry_sdk
 from celery import Celery
 from flask import Flask
+from pymodm import connect
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk import capture_message
 
@@ -41,6 +42,9 @@ def configure_extensions(app):
     # flask-sqlalchemy
     db.init_app(app)
     log_any('Connect with Mysql successfully')
+
+    connect(DefaultConfig.MONGODB_URI, connect=False)
+    print('Connect with MongoDB successfully')
 
     # Redis
     redis_cache.init_app(app)

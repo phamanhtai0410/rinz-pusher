@@ -4,8 +4,8 @@ from flask import Blueprint, request, abort, g
 from flask_expects_json import expects_json
 
 from src.utils import make_cross_domain_response, log_any
-from ..config import DefaultConfig
-from ..constants import AppConstants
+from src.config import DefaultConfig
+from src.constants import AppConstants
 
 rest_service = Blueprint('rest_service', __name__, url_prefix='/common')
 

@@ -1,10 +1,13 @@
 import json
+import traceback
+
 import sqlalchemy
+from pymodm import fields, MongoModel
 from sqlalchemy import inspect, desc, text
 from sqlalchemy.types import TypeDecorator
 from sentry_sdk import capture_exception
-from traceback import print_exception
-from src.decorators import cache_id, cache_filter
+from traceback import print_exc
+from src.decorators.cache import cache_id, cache_filter
 from src.extensions import db
 
 SIZE = 10000
@@ -34,7 +37,7 @@ class Base():
         except Exception as e:
             db.session.rollback()
             capture_exception(e)
-            print_exception(e)
+            print_exc()
 
     @classmethod
     def insert(cls, payload):
@@ -42,10 +45,10 @@ class Base():
             db.session.add(payload)
             db.session.commit()
             return payload
-        except Exception as e:
+        except:
             db.session.rollback()
-            capture_exception(e)
-            print_exception(e)
+            capture_exception()
+            print_exc()
 
     def to_dict(self):
         return {c.key: getattr(self, c.key)
@@ -107,3 +110,118 @@ class Base():
 
             return get_cache_by_filter(**_filter, options=_options)
         return get_db()
+
+
+class BaseMG(MongoModel):
+    created_by = fields.CharField(default='')
+    updated_by = fields.CharField(default='')
+    created_time = fields.DateTimeField(default=None)
+    updated_time = fields.DateTimeField(default=None)
+
+    def to_dict(self):
+        return self.to_son().to_dict()
+
+    @classmethod
+    def get_all(cls):
+        return cls.objects.all()
+
+    @classmethod
+    def find(cls, raw_dict):
+        try:
+            return cls.objects.raw(raw_dict)
+        except Exception as e:
+            capture_exception(e)
+            traceback.print_exc()
+            return []
+
+    @classmethod
+    def find_one(cls, _filter, with_cache=True, cache_keys=[]):
+        try:
+            _keys = _filter.keys()
+
+            def get_db():
+                value = cls.objects.get(_filter)
+                if value:
+                    return value.to_dict()
+                return {}
+
+            if with_cache:
+                @cache_filter(key_prefix=cls.Meta.collection_name, key_fields=cache_keys, options=[])
+                def get_cache_by_filter(*args, **kwargs):
+                    return get_db()
+
+                return get_cache_by_filter(**_filter, options=[])
+            return get_db()
+
+        except cls.DoesNotExist:
+            return {}
+        except:
+            capture_exception()
+            traceback.print_exc()
+            return {}
+
+    @classmethod
+    def get_by_filter(cls, _filter={}, _options={}, with_cache=True, cache_keys=[]):
+        try:
+            _keys = _filter.keys()
+            __option_keys = _options.keys()
+
+            def get_db():
+                _query = [{
+                    '$match': _filter
+                }]
+                if 'sort' in __option_keys:
+                    _query.append({
+                        '$sort': _options.get('sort')
+                    })
+                if 'offset' in __option_keys:
+                    _query.append({
+                        '$skip': _options.get('offset')
+                    })
+                if 'limit' in __option_keys:
+                    _query.append({
+                        '$limit': _options.get('limit')
+                    })
+                values = cls.objects.aggregate(*_query)
+                return values
+
+            if with_cache:
+                @cache_filter(key_prefix=cls.Meta.collection_name, key_fields=cache_keys, options=__option_keys)
+                def get_cache_by_filter(*args, **kwargs):
+                    return get_db()
+
+                return get_cache_by_filter(**_filter, options=_options)
+            return get_db()
+        except cls.DoesNotExist:
+            return {}
+        except:
+            capture_exception()
+            traceback.print_exc()
+            return {}
+
+    @classmethod
+    def get_by_id(cls, _id, with_cache=True):
+        try:
+            if with_cache:
+                @cache_id(key_prefix=cls.Meta.collection_name)
+                def get_cache_by_id(with_id):
+                    value = cls.objects.get({'_id': fields.ObjectId(_id)})
+                    if value:
+                        return value.to_dict()
+                    return {}
+
+                get_cache_by_id(_id)
+            return cls.objects.get({'_id': fields.ObjectId(_id)})
+        except:
+            capture_exception()
+            traceback.print_exc()
+            return {}
+
+    @classmethod
+    def get_by_list_ids(cls, list_ids):
+        try:
+            return cls.objects.raw({'_id': {'$in': [fields.ObjectId(id) for id in list_ids]}})
+        except Exception as e:
+            capture_exception(e)
+            traceback.print_exc()
+            return []

@@ -11,6 +11,7 @@ import json
 import requests
 from datetime import datetime
 
+from bson import ObjectId
 from flask import make_response
 from sentry_sdk import capture_exception
 from traceback import print_exception
@@ -127,19 +128,20 @@ def make_response_dict(data):
     return json.loads(dict_string)
 
 
-def make_cross_domain_response(data, response_code=200, extra_data=[]):
-    # etag = hashlib.sha1(json.dumps(data)).hexdigest()
-    # if request.if_none_match and etag in request.if_none_match:
-    #     response = make_response(jsonify({}), 304)
-    # else:
-    #     response = make_response(jsonify(data), response_code)
-    #     response.set_etag(etag)
-    # set headers for response CORS
+def make_cross_domain_response(response_data={}, response_status=1,
+                               response_error_code='', response_msg='success',
+                               response_code=200,
+                               extra_data=[]):
+    data = {
+        'data': response_data,
+        'status': response_status,
+        'msg': response_msg,
+        'error_code': response_error_code
+    }
     data = make_response_dict(data)
     response = make_response(data, response_code)
-    # response = make_response(jsonify(data), response_code)
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE,OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'AUTHORIZATION, If-none-match'
     response.headers['Access-Control-Max-Age'] = '1728000'
     response.headers['Access-Control-Expose-Headers'] = 'ETag, X-TOKEN'
@@ -162,7 +164,8 @@ def json_decode_hook(obj):
 def json_encode_hook(obj):
     if isinstance(obj, datetime):
         obj = {'__datetime__': True, 'as_str': obj.strftime("%Y%m%dT%H:%M:%S.%f")}
-
+    if isinstance(obj, ObjectId):
+        obj = str(obj)
     return obj
 
 
@@ -294,3 +297,10 @@ def set_redis_cache(key, value):
     redis_cache.set(key, output)
 
     return None
+
+
+def get_url(request):
+    url_request = request.url_rule.rule.split('<')
+    url_request = url_request[0].split('/')
+    url_prefix = '/'.join([x for x in url_request if x])
+    return url_prefix.replace('v1/inside_admin', '')

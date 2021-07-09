@@ -30,10 +30,9 @@ class DefaultConfig(BaseConfig):
     CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
     CELERY_TASK_RESULT_EXPIRES = os.getenv('CELERY_TASK_RESULT_EXPIRES')
     CELERY_TASK_RESULT_EXPIRES = int(CELERY_TASK_RESULT_EXPIRES) if CELERY_TASK_RESULT_EXPIRES else 600
-    CELERY_DEFAULT_QUEUE = 'the-cua-tui-3th'
+    CELERY_DEFAULT_QUEUE = 'the-cua-tui-template'
     CELERY_ROUTES = {
-        'base.tasks.health_check': {'queue': 'the-cua-tui-3th'},
-        'connect_3th_send_sms': {'queue': 'the-cua-tui-3th'}
+        'template': {'queue': 'the-cua-tui-template'}
     }
     CELERY_TRACK_STARTED = "True"
 
@@ -48,6 +47,4 @@ class DefaultConfig(BaseConfig):
     REDIS_URL = os.getenv('REDIS_URL')
     REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES'))
 
-    FPT_CLIENT_ID_CMS = os.getenv('FPT_CLIENT_ID_CMS')
-    FPT_CLIENT_SECRET_CMS = os.getenv('FPT_CLIENT_SECRET_CMS')
-    FPT_URL_CMS = os.getenv('FPT_URL_CMS')
+    MONGODB_URI = os.getenv('MONGODB_URI')

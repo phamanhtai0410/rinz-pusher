@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import os
-import traceback
-
 import sentry_sdk
 from apscheduler.triggers.combining import AndTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from sentry_sdk import capture_exception, capture_message
+from pymodm import connect
+from sentry_sdk import capture_message
 from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, request, jsonify
 from flask_babel import Babel
-from .common import rest_service
+from src.api import rest_service
 from .config import DefaultConfig
 from .extensions import redis_cache, db, jobs
 from jsonschema import ValidationError
@@ -75,6 +73,9 @@ def configure_extensions(app):
     db.init_app(app)
     log_any('Connect with Mysql successfully')
 
+    connect(DefaultConfig.MONGODB_URI, connect=False)
+    print('Connect with MongoDB successfully')
+
     # Redis
     redis_cache.init_app(app)
     log_any('Init Redis cache successfully')
@@ -133,7 +134,7 @@ def configure_error_handlers(app):
             'error_code': 'ERROR_FORBIDDEN',
             'msg': 'forbidden',
             'data': {}
-        }), 403
+        }), 200
 
     @app.errorhandler(404)
     def page_not_found(error):
@@ -142,7 +143,7 @@ def configure_error_handlers(app):
             'error_code': 'ERROR_NOT_FOUND',
             'msg': 'notfound',
             'data': {}
-        }), 404
+        }), 200
 
     @app.errorhandler(500)
     def server_error_page(error):
@@ -151,7 +152,7 @@ def configure_error_handlers(app):
             'error_code': 'ERROR_SERVER_ERROR',
             'msg': 'server error',
             'data': {}
-        }), 500
+        }), 200
 
     @app.errorhandler(400)
     def bad_request(error):
@@ -162,5 +163,5 @@ def configure_error_handlers(app):
                 'error_code': 'ERROR_VALIDATION',
                 'msg': original_error.message,
                 'data': {}
-            }), 400
+            }), 200
         return error
