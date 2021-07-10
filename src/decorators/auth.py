@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 import json
 from functools import wraps
+
+from src.constants import AppConstants
 from src.extensions import redis_cache, redis_cluster
 from flask import request, abort, jsonify
 from sentry_sdk import capture_exception
 import jwt
 import traceback
+
+from src.utils import make_cross_domain_response
 
 
 def auth_user():
@@ -22,7 +26,7 @@ def auth_user():
 
             rq_user_token = request.headers.get('Authorization')
             if not rq_user_token or 'Bearer ' not in rq_user_token:
-                abort(401)
+                return make_cross_domain_response(_code=AppConstants.AUTH_ERROR)
 
             rq_user_token = rq_user_token.split(' ')[1]
             # Get user token on Redis user info
@@ -36,7 +40,7 @@ def auth_user():
                     capture_exception()
 
             if not user_info:
-                abort(401)
+                return make_cross_domain_response(_code=AppConstants.AUTH_ERROR)
 
             decorated_kwargs = {**kwargs, 'user_info': user_info.get('payload', {})}
             return f(*args, **decorated_kwargs)

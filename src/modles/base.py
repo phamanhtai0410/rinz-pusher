@@ -1,7 +1,9 @@
 import json
 import traceback
+from datetime import datetime
 
 import sqlalchemy
+from bson import ObjectId
 from pymodm import fields, MongoModel
 from sqlalchemy import inspect, desc, text
 from sqlalchemy.types import TypeDecorator
@@ -9,6 +11,7 @@ from sentry_sdk import capture_exception
 from traceback import print_exc
 from src.decorators.cache import cache_id, cache_filter
 from src.extensions import db
+from src.utils import get_current_time
 
 SIZE = 10000
 
@@ -113,10 +116,23 @@ class Base():
 
 
 class BaseMG(MongoModel):
-    created_by = fields.CharField(default='')
-    updated_by = fields.CharField(default='')
-    created_time = fields.DateTimeField(default=None)
-    updated_time = fields.DateTimeField(default=None)
+    created_by = fields.CharField(default='', blank=True)
+    updated_by = fields.CharField(default='', blank=True)
+    created_time = fields.DateTimeField()
+    updated_time = fields.DateTimeField()
+
+    @classmethod
+    def add(cls, payload):
+        _init = {}
+        for field in cls._mongometa.get_fields():
+            if field.mongo_name == '_id' and not isinstance(payload.get('_id'), ObjectId):
+                _init[field.mongo_name] = ObjectId()
+            else:
+                if field.mongo_name in ['created_time', 'updated_time'] and not isinstance(field.mongo_name, datetime):
+                    _init[field.mongo_name] = get_current_time()
+                else:
+                    _init[field.mongo_name] = payload.get(field.mongo_name, field.default)
+        return cls(**_init).save()
 
     def to_dict(self):
         return self.to_son().to_dict()
@@ -124,15 +140,6 @@ class BaseMG(MongoModel):
     @classmethod
     def get_all(cls):
         return cls.objects.all()
-
-    @classmethod
-    def find(cls, raw_dict):
-        try:
-            return cls.objects.raw(raw_dict)
-        except Exception as e:
-            capture_exception(e)
-            traceback.print_exc()
-            return []
 
     @classmethod
     def find_one(cls, _filter, with_cache=True, cache_keys=[]):
@@ -183,7 +190,7 @@ class BaseMG(MongoModel):
                         '$limit': _options.get('limit')
                     })
                 values = cls.objects.aggregate(*_query)
-                return values
+                return list(values)
 
             if with_cache:
                 @cache_filter(key_prefix=cls.Meta.collection_name, key_fields=cache_keys, options=__option_keys)

@@ -15,6 +15,8 @@ from bson import ObjectId
 from flask import make_response
 from sentry_sdk import capture_exception
 from traceback import print_exception
+
+from .constants import AppConstants, get_response_code
 from .extensions import redis_cluster, redis_cache
 
 
@@ -120,6 +122,8 @@ def replace_special_character(text):
 def json_encode_response(obj):
     if isinstance(obj, datetime):
         obj = obj.timestamp()
+    if isinstance(obj, ObjectId):
+        obj = str(obj)
     return obj
 
 
@@ -128,18 +132,13 @@ def make_response_dict(data):
     return json.loads(dict_string)
 
 
-def make_cross_domain_response(response_data={}, response_status=1,
-                               response_error_code='', response_msg='success',
-                               response_code=200,
-                               extra_data=[]):
+def make_cross_domain_response(response_data={}, _code=AppConstants.SUCCESS, extra_data=[]):
     data = {
         'data': response_data,
-        'status': response_status,
-        'msg': response_msg,
-        'error_code': response_error_code
+        **get_response_code(_code)
     }
     data = make_response_dict(data)
-    response = make_response(data, response_code)
+    response = make_response(data, 200)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE,OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'AUTHORIZATION, If-none-match'

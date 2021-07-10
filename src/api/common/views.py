@@ -17,9 +17,7 @@ def health_check():
     payload = {
         "info": "log health_check"
     }
-    return make_cross_domain_response(
-        {'status': AppConstants.STATUS_OK, 'msg': 'TheCuaTui Health Check {}'.format(DefaultConfig.PROJECT),
-         'error_code': AppConstants.NOT_E}, 200)
+    return make_cross_domain_response()
 
 
 # method != GET
@@ -46,5 +44,4 @@ def test():
     # data here
     data = g.data
     log_any(data)
-    return make_cross_domain_response(
-        {'status': AppConstants.STATUS_OK, 'msg': 'success', 'error_code': AppConstants.NOT_E})
+    return make_cross_domain_response()
