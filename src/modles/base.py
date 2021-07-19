@@ -135,7 +135,10 @@ class BaseMG(MongoModel):
         return cls(**_init).save()
 
     def to_dict(self):
-        return self.to_son().to_dict()
+        _dict = self.to_son().to_dict()
+        if '_id' in _dict.keys():
+            _dict['_id'] = str(_dict['_id'])
+        return _dict
 
     @classmethod
     def get_all(cls):
