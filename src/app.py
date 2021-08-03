@@ -47,12 +47,13 @@ def create_app(config=None, app_name=None, blueprints=None):
 
 
 def configure_jobs(app):
-    trigger = AndTrigger([IntervalTrigger(hours=1)])
-    jobs.add_job(
-        name_job(),
-        trigger
-    )
-    jobs.start()
+    # trigger = AndTrigger([IntervalTrigger(hours=1)])
+    # jobs.add_job(
+    #     name_job(),
+    #     trigger
+    # )
+    # jobs.start()
+    print("Init jobs")
 
 
 def configure_app(app, config=None):

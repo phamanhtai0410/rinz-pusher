@@ -126,7 +126,10 @@ class BaseMG(MongoModel):
         _init = {}
         for field in cls._mongometa.get_fields():
             if field.mongo_name == '_id' and not isinstance(payload.get('_id'), ObjectId):
-                _init[field.mongo_name] = ObjectId()
+                if isinstance(payload.get('_id'), str):
+                    _init[field.mongo_name] = ObjectId(payload.get('_id'))
+                else:
+                    _init[field.mongo_name] = ObjectId()
             else:
                 if field.mongo_name in ['created_time', 'updated_time'] and not isinstance(field.mongo_name, datetime):
                     _init[field.mongo_name] = get_current_time()
@@ -164,6 +167,8 @@ class BaseMG(MongoModel):
             return get_db()
 
         except cls.DoesNotExist:
+            return {}
+        except cls.MultipleObjectsReturned:
             return {}
         except:
             capture_exception()

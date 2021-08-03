@@ -48,3 +48,4 @@ class DefaultConfig(BaseConfig):
     REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES'))
 
     MONGODB_URI = os.getenv('MONGODB_URI')
+    CACHE_SUB = ''

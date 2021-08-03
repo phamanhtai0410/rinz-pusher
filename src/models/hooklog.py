@@ -4,7 +4,7 @@ from src.extensions import db
 
 from sqlalchemy import Column
 
-from src.modles.base import JsonType, Base
+from src.models.base import JsonType, Base
 from src.utils import get_current_time
 
 
