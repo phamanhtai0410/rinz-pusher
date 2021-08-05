@@ -16,6 +16,6 @@ RUN pip --no-cache-dir install --upgrade pip setuptools
 RUN pip --no-cache-dir install -r requirements.txt && mkdir -p /var/log/apps
 
 COPY conf/supervisor/ /etc/supervisor.d/
-COPY . /webapps/the-cua-tui-service
+COPY . /webapps/service
 
-WORKDIR /webapps/the-cua-tui-service
+WORKDIR /webapps/service

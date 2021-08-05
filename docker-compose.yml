@@ -3,12 +3,12 @@ version: '3'
 services: 
   backend:
     # Name the service container
-    image: the-cua-tui-service
-    container_name: the-cua-tui-service
+    image: service
+    container_name: service
     build: ./
     restart: on-failure
     volumes: 
-      - ./:/webapps/the-cua-tui-service
+      - ./:/webapps/service
       - /var/log/apps/:/var/log/apps/
     ports:
       - 5011:5005

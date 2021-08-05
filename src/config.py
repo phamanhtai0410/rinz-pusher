@@ -8,7 +8,7 @@ load_dotenv()
 
 
 class BaseConfig(object):
-    PROJECT = "the-cua-tui-3th"
+    PROJECT = "service"
 
     PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -30,9 +30,9 @@ class DefaultConfig(BaseConfig):
     CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
     CELERY_TASK_RESULT_EXPIRES = os.getenv('CELERY_TASK_RESULT_EXPIRES')
     CELERY_TASK_RESULT_EXPIRES = int(CELERY_TASK_RESULT_EXPIRES) if CELERY_TASK_RESULT_EXPIRES else 600
-    CELERY_DEFAULT_QUEUE = 'the-cua-tui-template'
+    CELERY_DEFAULT_QUEUE = 'service-template'
     CELERY_ROUTES = {
-        'template': {'queue': 'the-cua-tui-template'}
+        'template': {'queue': 'service-template'}
     }
     CELERY_TRACK_STARTED = "True"
 
