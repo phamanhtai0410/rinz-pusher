@@ -49,3 +49,4 @@ class DefaultConfig(BaseConfig):
 
     MONGODB_URI = os.getenv('MONGODB_URI')
     CACHE_SUB = ''
+    INSIDE_APIKEY = os.getenv('INSIDE_APIKEY')

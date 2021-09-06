@@ -122,6 +122,50 @@ class BaseMG(MongoModel):
     updated_time = fields.DateTimeField()
 
     @classmethod
+    def update_one(cls, filter, update_data):
+        try:
+            _keys = update_data.keys()
+            _delete_keys = ['created_by', 'created_time', '_id']
+            for _key in _delete_keys:
+                if _key in _keys:
+                    del update_data[_key]
+
+            return cls.objects.raw(filter).update({
+                '$set': {
+                    **update_data,
+                    'updated_time': datetime.utcnow()
+                }
+            })
+        except cls.DoesNotExist:
+            return {}
+        except Exception as e:
+            capture_exception(e)
+            traceback.print_exc()
+            return {}
+
+    @classmethod
+    def update_many(cls, filter, update_data):
+        try:
+            _keys = update_data.keys()
+            _delete_keys = ['created_by', 'created_time', '_id']
+            for _key in _delete_keys:
+                if _key in _keys:
+                    del update_data[_key]
+
+            return cls.objects.raw(filter).update({
+                '$set': {
+                    **update_data,
+                    'updated_time': datetime.utcnow()
+                }
+            })
+        except cls.DoesNotExist:
+            return {}
+        except Exception as e:
+            capture_exception(e)
+            traceback.print_exc()
+            return {}
+
+    @classmethod
     def add(cls, payload):
         _init = {}
         for field in cls._mongometa.get_fields():
@@ -197,8 +241,11 @@ class BaseMG(MongoModel):
                     _query.append({
                         '$limit': _options.get('limit')
                     })
-                values = cls.objects.aggregate(*_query)
-                return list(values)
+                try:
+                    values = cls.objects.aggregate(*_query)
+                    return list(values)
+                except cls.DoesNotExist:
+                    return []
 
             if with_cache:
                 @cache_filter(key_prefix=cls.Meta.collection_name, key_fields=cache_keys, options=__option_keys)
@@ -217,16 +264,22 @@ class BaseMG(MongoModel):
     @classmethod
     def get_by_id(cls, _id, with_cache=True):
         try:
-            if with_cache:
-                @cache_id(key_prefix=cls.Meta.collection_name)
-                def get_cache_by_id(with_id):
+            def get_db():
+                try:
                     value = cls.objects.get({'_id': fields.ObjectId(_id)})
                     if value:
                         return value.to_dict()
                     return {}
+                except cls.DoesNotExist:
+                    return {}
 
-                get_cache_by_id(_id)
-            return cls.objects.get({'_id': fields.ObjectId(_id)})
+            if with_cache:
+                @cache_id(key_prefix=cls.Meta.collection_name)
+                def get_cache_by_id(with_id):
+                    return get_db()
+
+                return get_cache_by_id(_id)
+            return get_db()
         except:
             capture_exception()
             traceback.print_exc()

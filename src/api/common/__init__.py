@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from .views import rest_service
+from .urls import rest_service

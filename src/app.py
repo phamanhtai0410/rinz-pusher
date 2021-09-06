@@ -8,7 +8,7 @@ from sentry_sdk import capture_message
 from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, request, jsonify
 from flask_babel import Babel
-from src.api import rest_service
+from src.api import rest_app
 from .config import DefaultConfig
 from .extensions import redis_cache, db, jobs
 from jsonschema import ValidationError
@@ -19,9 +19,7 @@ __all__ = ['create_app']
 from .schedule import name_job
 from .utils import log_any
 
-DEFAULT_BLUEPRINTS = (
-    rest_service,
-)
+DEFAULT_BLUEPRINTS = rest_app
 
 
 def create_app(config=None, app_name=None, blueprints=None):
