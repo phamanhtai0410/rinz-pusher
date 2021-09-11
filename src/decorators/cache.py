@@ -15,28 +15,32 @@ CACHE_TIMEOUT_FACTOR = 1
 
 def get_data_by_key(_key):
     try:
-        # return None
-        return redis_cluster.get(_key)
+        if DefaultConfig.CACHING:
+            return redis_cluster.get(_key)
     except:
         sentry_sdk.capture_exception()
         traceback.print_exc()
-        return None
+    return None
 
 
 def set_data_by_key(_key, _payload):
     try:
-        return redis_cluster.setex(_key, 86400, dumps(_payload))
+        if DefaultConfig.CACHING:
+            return redis_cluster.setex(_key, 86400, dumps(_payload))
     except:
         sentry_sdk.capture_exception()
         traceback.print_exc()
-        return None
+    return None
 
 
 # timeout=1 week
 def cache_id(timeout=604800, key_prefix='common', keep_timeout=False):
     """
-    Decorator for caching functions by id, using its arguments as part of the key.
-    Returns the cached value, or the function if the cache is disabled
+        - Input:
+            + key_prefix: name of model(table or collection).
+        - Output:
+            + dict or None
+
     """
     if timeout is None:
         timeout = 300
@@ -65,8 +69,12 @@ def cache_id(timeout=604800, key_prefix='common', keep_timeout=False):
 # timeout = 1 day
 def cache_filter(timeout=86400, key_prefix='common', key_fields=[], options=[], keep_timeout=False):
     """
-    Decorator for caching functions by filter
-    Returns the cached value, or the function if the cache is disabled
+        - Input:
+            + key_prefix: name of model(table or collection).
+            + key_fields:  key of filter
+            + options: ex: limit, offset, sort, ...
+        - Output:
+            + result of filter
     """
     if timeout is None:
         timeout = 86400
