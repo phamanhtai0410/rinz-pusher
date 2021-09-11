@@ -5,20 +5,18 @@ from functools import wraps
 import sentry_sdk
 
 from src.config import DefaultConfig
-from src.utils import json_encode_hook, json_decode_hook, jsonify_dict, log_any, make_cross_domain_response
-from src.extensions import redis_cache, redis_cluster
-from flask import request, abort, jsonify
-from sentry_sdk import capture_exception
-import jwt
+from src.extensions import redis_cluster
 import traceback
+
+from src.utils.format import json_decode_hook, dumps, load_json
 
 CACHE_TIMEOUT_FACTOR = 1
 
 
 def get_data_by_key(_key):
     try:
-        return None
-        # return redis_cluster.get(_key)
+        # return None
+        return redis_cluster.get(_key)
     except:
         sentry_sdk.capture_exception()
         traceback.print_exc()
@@ -27,7 +25,7 @@ def get_data_by_key(_key):
 
 def set_data_by_key(_key, _payload):
     try:
-        return redis_cluster.setex(_key, 86400, json.dumps(_payload, default=json_encode_hook))
+        return redis_cluster.setex(_key, 86400, dumps(_payload))
     except:
         sentry_sdk.capture_exception()
         traceback.print_exc()
@@ -86,12 +84,11 @@ def cache_filter(timeout=86400, key_prefix='common', key_fields=[], options=[], 
             for option in options:
                 _filter[option] = _options.get(option)
 
-            key = "%s%s:%s" % (DefaultConfig.CACHE_SUB, key_prefix, jsonify_dict(_filter))
+            key = "%s%s:%s" % (DefaultConfig.CACHE_SUB, key_prefix, dumps(_filter))
             output = get_data_by_key(key)
             if output:
-                return json.loads(output, object_hook=json_decode_hook)
+                return load_json(output)
             output = f(*args, **kwargs)
-            # Set data to redis
             set_data_by_key(key, output)
             return output
 

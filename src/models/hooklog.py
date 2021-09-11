@@ -5,7 +5,7 @@ from src.extensions import db
 from sqlalchemy import Column
 
 from src.models.base import JsonType, Base
-from src.utils import get_current_time
+from src.utils.format import get_current_time
 
 
 class HookLog(db.Model, Base):
@@ -38,4 +38,3 @@ class HookLog(db.Model, Base):
         }
         hook_log = HookLog(**payload)
         return HookLog.insert(hook_log)
-

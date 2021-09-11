@@ -45,7 +45,7 @@ class DefaultConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
 
     REDIS_URL = os.getenv('REDIS_URL')
-    REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES'))
+    REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES', default='[]'))
 
     MONGODB_URI = os.getenv('MONGODB_URI')
     CACHE_SUB = ''
