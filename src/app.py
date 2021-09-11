@@ -17,7 +17,7 @@ from jsonschema import ValidationError
 __all__ = ['create_app']
 
 from .schedule import name_job
-from .utils.logger import logger
+from .utils.logger import Logger
 
 DEFAULT_BLUEPRINTS = rest_app
 
@@ -51,7 +51,7 @@ def configure_jobs(app):
     #     trigger
     # )
     # jobs.start()
-    print("Init jobs")
+    Logger.debug("Init jobs")
 
 
 def configure_app(app, config=None):
@@ -69,15 +69,17 @@ def configure_app(app, config=None):
 
 def configure_extensions(app):
     # flask-sqlalchemy
-    db.init_app(app)
-    logger('Connect with Mysql successfully')
+    # db.init_app(app)
+    Logger.debug('Connect with Mysql successfully')
 
-    connect(DefaultConfig.MONGODB_URI, connect=False)
-    print('Connect with MongoDB successfully')
-
+    # connect(DefaultConfig.MONGODB_URI, connect=False)
+    Logger.error('Connect with MongoDB successfully')
+    Logger.error({
+        'testing': 1
+    })
     # Redis
-    redis_cache.init_app(app)
-    logger('Init Redis cache successfully')
+    # redis_cache.init_app(app)
+    Logger.debug('Init Redis cache successfully')
     # Flask Babel
     babel = Babel(app)
 

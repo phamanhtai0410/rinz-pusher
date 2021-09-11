@@ -79,4 +79,5 @@ def create_celery_app(app=None):
     celery.Task = ContextTask
     return celery
 
+
 celery = create_celery_app()

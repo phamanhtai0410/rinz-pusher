@@ -28,7 +28,8 @@ def auth_user():
             if not rq_user_token or 'Bearer ' not in rq_user_token:
                 return make_response(
                     msg=Constants.MSG_REQUIRED_AUTH,
-                    status=Constants.STATUS_NOT_OK
+                    status=Constants.STATUS_NOT_OK,
+                    error_code=Constants.ERROR_AUTH
                 )
 
             rq_user_token = rq_user_token.split(' ')[1]
@@ -45,7 +46,8 @@ def auth_user():
             if not user_info:
                 return make_response(
                     msg=Constants.MSG_REQUIRED_AUTH,
-                    status=Constants.STATUS_NOT_OK
+                    status=Constants.STATUS_NOT_OK,
+                    error_code=Constants.ERROR_AUTH
                 )
 
             decorated_kwargs = {**kwargs, 'user_info': user_info.get('payload', {})}

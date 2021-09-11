@@ -3,15 +3,13 @@ from flask_redis import Redis
 from apscheduler.schedulers.background import BackgroundScheduler
 from rediscluster import RedisCluster
 from .config import DefaultConfig
+from flask_sqlalchemy import SQLAlchemy
 
 # Redis cache
 redis_cache = Redis()
 # Redis user info, will initialized in app
-redis_cluster = RedisCluster(startup_nodes=DefaultConfig.REDIS_USERS_STARTUP_NODES,
-                             decode_responses=True)  # print('Init Redis user info successfully')
-# redis_user_info=None
-
-from flask_sqlalchemy import SQLAlchemy
+redis_cluster = None # RedisCluster(startup_nodes=DefaultConfig.REDIS_USERS_STARTUP_NODES,
+                    #         decode_responses=True)
 
 db = SQLAlchemy()
 jobs = BackgroundScheduler(daemon=True)
