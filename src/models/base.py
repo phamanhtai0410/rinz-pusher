@@ -2,6 +2,7 @@ import json
 import traceback
 from datetime import datetime
 
+import sentry_sdk
 import sqlalchemy
 from bson import ObjectId
 from pymodm import fields, MongoModel
@@ -229,7 +230,6 @@ class BaseMG(MongoModel):
                     _query.append({
                         '$limit': options.get('limit')
                     })
-                print(_query)
                 values = cls.objects.aggregate(*_query)
                 return list(values)
 
@@ -251,9 +251,15 @@ class BaseMG(MongoModel):
     def get_by_id(cls, _id, with_cache=True):
         try:
             def get_db():
-                value = cls.objects.get({'_id': fields.ObjectId(_id)})
-                if value:
-                    return value.to_dict()
+                try:
+                    value = cls.objects.get({'_id': fields.ObjectId(_id)})
+                    if value:
+                        return value.to_dict()
+                except cls.DoesNotExist:
+                    return {}
+                except:
+                    sentry_sdk.capture_exception()
+                    traceback.print_exc()
                 return {}
 
             if with_cache:

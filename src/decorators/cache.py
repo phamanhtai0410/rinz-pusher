@@ -78,6 +78,7 @@ def cache_filter(timeout=86400, key_prefix='common', key_fields=[], options=[], 
         @wraps(f)
         def wrapper(*args, **kwargs):
             _filter = dict()
+            # TODO sort keys
             for key_field in key_fields:
                 _filter[key_field] = kwargs.get(key_field)
             _options = kwargs.get('options', {})
