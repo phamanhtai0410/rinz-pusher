@@ -13,6 +13,7 @@ from traceback import print_exc
 from src.decorators.cache import cache_id, cache_filter
 from src.extensions import db
 from src.utils.format import get_current_time
+from src.utils.validates import is_oid
 
 SIZE = 10000
 
