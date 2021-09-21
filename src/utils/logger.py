@@ -5,6 +5,7 @@ from datetime import datetime
 from sentry_sdk import capture_exception
 
 from src.utils.format import json_encode_hook
+from inspect import getframeinfo, stack
 
 
 class Bcolors():
@@ -28,7 +29,7 @@ class Logger(object):
     @staticmethod
     def debug(x, *args, **kwargs):
         try:
-
+            caller = getframeinfo(stack()[1][0])
             msg = {
                 'msg': x,
             }
@@ -39,6 +40,7 @@ class Logger(object):
                 msg['kwargs'] = json.dumps(args, default=json_encode_hook)
             msg = json.dumps(msg, default=json_encode_hook)
             print(f'{Bcolors.OKGREEN}[DEBUG] - {datetime.utcnow().strftime("%H:%M:%S.%f %d-%m-%Y")} {Bcolors.ENDC}')
+            print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')
         except:
             capture_exception()
@@ -47,6 +49,7 @@ class Logger(object):
     @staticmethod
     def error(x, *args, **kwargs):
         try:
+            caller = getframeinfo(stack()[1][0])
             msg = {
                 'msg': x,
             }
@@ -57,6 +60,7 @@ class Logger(object):
                 msg['kwargs'] = json.dumps(args, default=json_encode_hook)
             msg = json.dumps(msg, default=json_encode_hook)
             print(f'{Bcolors.FAIL}[ERROR] - {datetime.utcnow().strftime("%H:%M:%S.%f %d-%m-%Y")} {Bcolors.ENDC}')
+            print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')
         except:
             capture_exception()
