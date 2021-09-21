@@ -167,8 +167,12 @@ class BaseMG(MongoModel):
     def add(cls, payload):
         _init = {}
         for field in cls._mongometa.get_fields():
-            if field.mongo_name == '_id' and not isinstance(payload.get('_id'), ObjectId):
-                _init[field.mongo_name] = ObjectId()
+            if field.mongo_name == '_id':
+                if not isinstance(payload.get('_id'), ObjectId):
+                    if is_oid(payload.get(field.mongo_name)):
+                        _init[field.mongo_name] = ObjectId(payload.get(field.mongo_name))
+                    else:
+                        _init[field.mongo_name] = ObjectId()
             else:
                 if field.mongo_name in ['created_time', 'updated_time']:
                     if not isinstance(field.mongo_name, datetime):
