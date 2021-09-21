@@ -170,8 +170,13 @@ class BaseMG(MongoModel):
             if field.mongo_name == '_id' and not isinstance(payload.get('_id'), ObjectId):
                 _init[field.mongo_name] = ObjectId()
             else:
-                if field.mongo_name in ['created_time', 'updated_time'] and not isinstance(field.mongo_name, datetime):
-                    _init[field.mongo_name] = get_current_time()
+                if field.mongo_name in ['created_time', 'updated_time']:
+                    if not isinstance(field.mongo_name, datetime):
+                        if isinstance(field.mongo_name, (float, int)):
+                            _init[field.mongo_name] = datetime.fromtimestamp(
+                                payload.get(field.mongo_name, field.default))
+                        else:
+                            _init[field.mongo_name] = get_current_time().timestamp()
                 else:
                     _init[field.mongo_name] = payload.get(field.mongo_name, field.default)
         return cls(**_init).save()
