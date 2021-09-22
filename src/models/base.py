@@ -76,7 +76,10 @@ class Base():
         return {}
 
     @classmethod
-    def get_by_filter(cls, filter={}, options={}, with_cache=True):
+    def get_by_filter(cls,
+                      filter={},
+                      options={},
+                      with_cache=True):
         def get_db():
             _option_keys = options.keys()
             if 'limit' in _option_keys and 'offset' in _option_keys and 'order_by' in _option_keys:
@@ -93,7 +96,10 @@ class Base():
             _keys = filter.keys()
             __option_keys = options.keys()
 
-            @cache_filter(key_prefix=cls.__tablename__, key_fields=_keys, options=__option_keys)
+            @cache_filter(
+                key_prefix=cls.__tablename__,
+                key_fields=_keys,
+                options=__option_keys)
             def get_cache_by_filter(*args, **kwargs):
                 return get_db()
 
@@ -112,7 +118,10 @@ class Base():
             _keys = filter.keys()
             __option_keys = options.keys()
 
-            @cache_filter(key_prefix=cls.__tablename__, key_fields=_keys, options=__option_keys)
+            @cache_filter(
+                key_prefix=cls.__tablename__,
+                key_fields=_keys,
+                options=__option_keys)
             def get_cache_by_filter(*args, **kwargs):
                 return get_db()
 
@@ -127,10 +136,14 @@ class BaseMG(MongoModel):
     updated_time = fields.DateTimeField(default=None)
 
     @classmethod
-    def update_many(cls, filter, update_data):
+    def update_many(cls,
+                    filter: dict,
+                    update_data: dict):
         try:
             _keys = update_data.keys()
-            _delete_keys = ['created_by', 'created_time', '_id']
+            _delete_keys = ['created_by',
+                            'created_time',
+                            '_id']
             for _key in _delete_keys:
                 if _key in _keys:
                     del update_data[_key]
@@ -146,7 +159,9 @@ class BaseMG(MongoModel):
             return []
 
     @classmethod
-    def update_one(cls, filter, update_data):
+    def update_one(cls,
+                   filter: dict,
+                   update_data: dict):
         try:
             _keys = update_data.keys()
             _delete_keys = ['created_by', 'created_time', '_id']
@@ -193,7 +208,9 @@ class BaseMG(MongoModel):
         return _dict
 
     @classmethod
-    def get_one(cls, filter, with_cache=True):
+    def get_one(cls,
+                filter: dict = {},
+                with_cache=True):
         try:
             _keys = filter.keys()
 
@@ -204,11 +221,16 @@ class BaseMG(MongoModel):
                 return {}
 
             if with_cache:
-                @cache_filter(key_prefix=cls.Meta.collection_name, key_fields=_keys, options=[])
+                @cache_filter(
+                    key_prefix=cls.Meta.collection_name,
+                    key_fields=_keys,
+                    options=[])
                 def get_cache_by_filter(*args, **kwargs):
                     return get_db()
 
-                return get_cache_by_filter(**filter, options=[])
+                return get_cache_by_filter(
+                    **filter,
+                    options=[])
             return get_db()
 
         except cls.DoesNotExist:
@@ -219,7 +241,10 @@ class BaseMG(MongoModel):
             return {}
 
     @classmethod
-    def get_by_filter(cls, filter={}, options={}, with_cache=True):
+    def get_by_filter(cls,
+                      filter: dict = {},
+                      options={},
+                      with_cache=True):
         try:
             _keys = filter.keys()
             __option_keys = options.keys()
@@ -244,11 +269,17 @@ class BaseMG(MongoModel):
                 return list(values)
 
             if with_cache:
-                @cache_filter(key_prefix=cls.Meta.collection_name, key_fields=_keys, options=__option_keys)
+                @cache_filter(
+                    key_prefix=cls.Meta.collection_name,
+                    key_fields=_keys,
+                    options=__option_keys)
                 def get_cache_by_filter(*args, **kwargs):
                     return get_db()
 
-                return get_cache_by_filter(**filter, options=options)
+                return get_cache_by_filter(
+                    **filter,
+                    options=options
+                )
             return get_db()
         except cls.DoesNotExist:
             return {}
@@ -258,7 +289,9 @@ class BaseMG(MongoModel):
             return {}
 
     @classmethod
-    def get_by_id(cls, _id, with_cache=True):
+    def get_by_id(cls,
+                  _id: str,
+                  with_cache=True):
         try:
             def get_db():
                 try:
@@ -273,7 +306,8 @@ class BaseMG(MongoModel):
                 return {}
 
             if with_cache:
-                @cache_id(key_prefix=cls.Meta.collection_name)
+                @cache_id(
+                    key_prefix=cls.Meta.collection_name)
                 def get_cache_by_id(with_id):
                     return get_db()
 
