@@ -107,7 +107,7 @@ class Base():
         return get_db()
 
     @classmethod
-    def get_one_by_filter(cls, filter={}, options={}, with_cache=True):
+    def get_one(cls, filter={}, options={}, with_cache=True):
         def get_db():
             value = cls.query.filter_by(**filter).first()
             if value:
