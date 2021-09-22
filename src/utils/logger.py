@@ -33,15 +33,19 @@ class Logger(object):
             msg = {
                 'msg': x,
             }
+            args_and_kwargs = {}
             print('')
             if args:
-                msg['args'] = json.dumps(args, default=json_encode_hook)
+                args_and_kwargs['args'] = json.dumps(args, default=json_encode_hook)
             if kwargs:
-                msg['kwargs'] = json.dumps(args, default=json_encode_hook)
+                args_and_kwargs['kwargs'] = json.dumps(args, default=json_encode_hook)
             msg = json.dumps(msg, default=json_encode_hook)
             print(f'{Bcolors.OKGREEN}[DEBUG] - {datetime.utcnow().strftime("%H:%M:%S.%f %d-%m-%Y")} {Bcolors.ENDC}')
             print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')
+            if args_and_kwargs:
+                print(f'{Bcolors.WARNING}          {msg} {Bcolors.ENDC}')
+
         except:
             capture_exception()
             traceback.print_exc()
@@ -54,14 +58,17 @@ class Logger(object):
                 'msg': x,
             }
             print('')
+            args_and_kwargs = {}
             if args:
-                msg['args'] = json.dumps(args, default=json_encode_hook)
+                args_and_kwargs['args'] = json.dumps(args, default=json_encode_hook)
             if kwargs:
-                msg['kwargs'] = json.dumps(args, default=json_encode_hook)
+                args_and_kwargs['kwargs'] = json.dumps(args, default=json_encode_hook)
             msg = json.dumps(msg, default=json_encode_hook)
             print(f'{Bcolors.FAIL}[ERROR] - {datetime.utcnow().strftime("%H:%M:%S.%f %d-%m-%Y")} {Bcolors.ENDC}')
             print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')
+            if args_and_kwargs:
+                print(f'{Bcolors.WARNING}          {msg} {Bcolors.ENDC}')
         except:
             capture_exception()
             traceback.print_exc()
