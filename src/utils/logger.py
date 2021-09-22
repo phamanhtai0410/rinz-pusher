@@ -44,7 +44,7 @@ class Logger(object):
             print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')
             if args_and_kwargs:
-                print(f'{Bcolors.WARNING}          {msg} {Bcolors.ENDC}')
+                print(f'{Bcolors.WARNING}          {args_and_kwargs} {Bcolors.ENDC}')
 
         except:
             capture_exception()
@@ -68,7 +68,7 @@ class Logger(object):
             print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')
             if args_and_kwargs:
-                print(f'{Bcolors.WARNING}          {msg} {Bcolors.ENDC}')
+                print(f'{Bcolors.WARNING}          {args_and_kwargs} {Bcolors.ENDC}')
         except:
             capture_exception()
             traceback.print_exc()
