@@ -93,11 +93,46 @@ def cache_filter(timeout=86400, key_prefix='common', key_fields=[], options=[], 
             for option in options:
                 _filter[option] = _options.get(option)
 
-            key = "%s%s:%s" % (DefaultConfig.CACHE_SUB, key_prefix, dumps(_filter))
+            key = "%s%s:%s" % (DefaultConfig.CACHE_SUB,
+                               key_prefix, dumps(_filter))
             output = get_data_by_key(key)
             if output:
                 return load_json(output)
             output = f(*args, **kwargs)
+            set_data_by_key(key, output)
+            return output
+
+        return wrapper
+
+    return decorator
+
+# timeout=1 week
+
+
+def cache_request(timeout=604800, key_prefix='url', keep_timeout=False):
+    """
+        - Input:
+            + key_prefix: name of model(table or collection).
+        - Output:
+            + dict or None
+
+    """
+    if timeout is None:
+        timeout = 604800
+
+    if not keep_timeout:
+        timeout *= CACHE_TIMEOUT_FACTOR
+
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            key = "%s:requests:%s" % (DefaultConfig.PREFIX, key_prefix)
+            output = get_data_by_key(key)
+            if output:
+                return load_json(output)
+
+            output = f(*args, **kwargs)
+            # Set data to redis
             set_data_by_key(key, output)
             return output
 

@@ -15,10 +15,14 @@ class Constants(object):
     # Response status
     STATUS_OK = 1
     STATUS_NOT_OK = 0
+    # messgae
 
+    MSG_NOT_FOUND = 'not found'
+    MSG_UNKNOWN_ERROR = 'unknown error'
+    MSG_SUCCCESS = 'success'
     # Error code
     CODE_NOT_E = ''
-
+    ERROR_NOT_FOUND = 'ERROR_NOT_FOUND'
     ERROR_SERVER = 'ERROR_SERVER'
     ERROR_AUTH = 'ERROR_AUTH'
     ERROR_INVALID_PARAMS = 'ERROR_INVALID_PARAMS'

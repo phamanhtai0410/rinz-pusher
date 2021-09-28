@@ -13,4 +13,4 @@ def make_response(data: dict = {}, msg: str = '', error_code: str = '', status: 
         'time': datetime.utcnow().timestamp()
     }
 
-    return jsonify(result), 200
+    return result
