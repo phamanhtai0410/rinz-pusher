@@ -26,7 +26,8 @@ class BaseQuery():
 class BaseResponse():
     @pre_load
     def load_id(self, in_data, **kwargs):
-        in_data['_id'] = str(in_data['_id'])
+        if in_data.get('_id'):
+            in_data['_id'] = str(in_data['_id'])
         return in_data
 
     @pre_load
@@ -40,7 +41,6 @@ class BaseResponse():
     def load_response(cls, payload: dict = {}):
         try:
             try:
-                print('payload', payload)
                 result = cls().load(payload)
                 return result
             except:

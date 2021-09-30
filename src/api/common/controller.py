@@ -2,7 +2,6 @@
 from datetime import datetime
 from src.decorators.handle_response import handle_response
 from src.exceptions import ExeceptionNotFound
-from src.exceptions.handler import request_exception
 
 from bson import ObjectId
 from flask import g

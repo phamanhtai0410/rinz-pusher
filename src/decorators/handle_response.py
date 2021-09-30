@@ -8,7 +8,7 @@ from src.constants import Constants
 from src.exceptions.handler import request_exception
 from flask import jsonify
 from flask.globals import request
-from src.decorators.cache import cache_request
+from src.decorators import cache_request
 
 
 def handle_response(cahing=False, timeout=604800, default=None):

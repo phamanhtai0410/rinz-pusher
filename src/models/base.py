@@ -186,9 +186,13 @@ class BaseMG(MongoModel):
             if field.mongo_name == '_id':
                 if not isinstance(payload.get('_id'), ObjectId):
                     if is_oid(payload.get(field.mongo_name)):
-                        _init[field.mongo_name] = ObjectId(payload.get(field.mongo_name))
+                        _init[field.mongo_name] = ObjectId(
+                            payload.get(field.mongo_name))
                     else:
                         _init[field.mongo_name] = ObjectId()
+                else:
+                    _init[field.mongo_name] = payload.get(
+                        field.mongo_name, ObjectId())
             else:
                 if field.mongo_name in ['created_time', 'updated_time']:
                     if not isinstance(field.mongo_name, datetime):
@@ -198,7 +202,8 @@ class BaseMG(MongoModel):
                         else:
                             _init[field.mongo_name] = get_current_time().timestamp()
                 else:
-                    _init[field.mongo_name] = payload.get(field.mongo_name, field.default)
+                    _init[field.mongo_name] = payload.get(
+                        field.mongo_name, field.default)
         return cls(**_init).save()
 
     def to_dict(self):

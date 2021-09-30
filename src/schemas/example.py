@@ -1,4 +1,3 @@
-import traceback
 
 from marshmallow import Schema, fields, ValidationError, INCLUDE, EXCLUDE, pre_load
 
