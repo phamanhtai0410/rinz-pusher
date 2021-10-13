@@ -5,5 +5,5 @@ class UserService(object):
 
     @staticmethod
     @handle_exception
-    def update_device(device: dict):
-        user_id = device.get('user_id')
+    def login_device(user_id: int, device: dict):
+        print()
