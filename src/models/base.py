@@ -17,6 +17,30 @@ from src.utils.validates import is_oid
 SIZE = 10000
 
 
+def init_row(row, fields):
+    _init = {}
+    for field in fields:
+        if field.mongo_name == '_id':
+            if not isinstance(row.get('_id'), ObjectId):
+                if isinstance(row.get('_id'), str):
+                    _init[field.mongo_name] = ObjectId(row.get('_id'))
+                else:
+                    _init[field.mongo_name] = ObjectId()
+            else:
+                _init[field.mongo_name] = row.get(field.mongo_name)
+        else:
+            if field.mongo_name in ['created_time', 'updated_time'] and not isinstance(field.mongo_name, datetime):
+                if isinstance(field.mongo_name, (float, int)):
+                    _init[field.mongo_name] = datetime.fromtimestamp(
+                        row.get(field.mongo_name, field.default))
+                else:
+                    _init[field.mongo_name] = get_current_time()
+            else:
+                _init[field.mongo_name] = row.get(
+                    field.mongo_name, field.default)
+    return _init
+
+
 class JsonType(TypeDecorator):
     impl = sqlalchemy.Text(SIZE)
 
@@ -133,6 +157,13 @@ class BaseMG(MongoModel):
     updated_by = fields.CharField(default='', blank=True)
     created_time = fields.DateTimeField(default=None)
     updated_time = fields.DateTimeField(default=None)
+
+    @classmethod
+    def add_many(cls, items):
+        fields = cls._mongometa.get_fields()
+        _rows = [cls(**init_row(row, fields)) for row in items]
+        if _rows:
+            return cls.objects.bulk_create(_rows)
 
     @classmethod
     def update_many(cls,

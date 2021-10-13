@@ -4,27 +4,52 @@ from src.decorators.handle_response import handle_response
 from src.decorators.load_body import load_data
 from src.schemas.device import DeviceSchema
 from src.schemas.notification import NotificationSchema
+from src.services.firebase import FirebaseService
+from src.services.user import UserService
+from src.utils.generator import gen_oid
 from src.utils.logger import Logger
+from src.workers.user import insert_notifications_task
 
 
 @handle_response()
 @load_data(NotificationSchema)
 def send_to_user_controller():
     data = g.data
-    Logger.debug(data)
+    users = data.get('users', [])
+    del data['users']
+    data['bulk_id'] = gen_oid()
+    data['navigate']['is_record'] = True
+    notifications = [{
+        'user_id': x,
+        **data
+    } for x in data.get('users', [])]
+    insert_notifications_task(notifications=notifications)
+    FirebaseService.send_message_to_users(users, data)
+    return {}
+
+
+@handle_response()
+@load_data(NotificationSchema)
+def send_to_user_no_record_controller():
+    data = g.data
+    users = data.get('users', [])
+    del data['users']
+    data['navigate']['is_record'] = False
+    FirebaseService.send_message_to_users(users, data)
     return {}
 
 
 @handle_response()
 @load_data(DeviceSchema)
 def login_device_controller():
-    data = g.data
-    # update_device_of_user(data)
+    device = g.data
+    UserService.login_device(device=device)
     return {}
 
 
 @handle_response()
 @load_data(DeviceSchema)
 def logout_device_controller():
-    data = g.data
+    device = g.data
+    UserService.logout_device(device=device)
     return {}

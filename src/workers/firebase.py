@@ -3,19 +3,22 @@ from src.tasks import celery
 from firebase_admin import messaging
 
 from src.utils.format import dumps
+from src.utils.logger import Logger
 
 
 @celery.task(name='push.tasks.firebase.subscribe', rate_limit='100/s')
 @handle_exception()
 def firebase_subscribe_task(topic: str, tokens: list):
-    messaging.subscribe_to_topic(tokens, topic)
+    response = messaging.subscribe_to_topic(tokens, topic)
+    Logger.debug(response)
     return 'success'
 
 
 @celery.task(name='push.tasks.firebase.unsubscribe', rate_limit='100/s')
 @handle_exception()
 def firebase_unsubscribe_task(topic: str, tokens: list):
-    messaging.unsubscribe_from_topic(tokens, topic)
+    response = messaging.unsubscribe_from_topic(tokens, topic)
+    Logger.debug(response)
     return 'success'
 
 
@@ -25,7 +28,7 @@ def firebase_send_topic_use_condition(condition, notification):
     preview = _message.get('preview', {})
     payload = notification.get('payload', {})
     payload["navigate"] = dumps(notification.get('navigate', {}))
-    payload["_id"] = notification.get('_id', '')
+    payload["bulk_id"] = notification.get('bulk_id', '')
 
     data_payload = {}
     for x in payload.keys():
@@ -57,5 +60,6 @@ def firebase_send_topic_use_condition(condition, notification):
             )),
             condition=condition,
         )
-    messaging.send(message)
+    response = messaging.send(message)
+    Logger.debug(response)
     return "success"
