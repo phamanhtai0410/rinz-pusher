@@ -5,7 +5,7 @@ from src.models.base import BaseMG
 
 class Notification(BaseMG):
     class Meta:
-        collection_name = 'rz_world_notifications'
+        collection_name = 'rz_notifications'
         final = True
         ignore_unknown_fields = True
 
