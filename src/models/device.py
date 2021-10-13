@@ -14,3 +14,5 @@ class Device(BaseMG):
     fcm_token = fields.CharField(required=True)
     platform = fields.CharField(required=True)
     device_id = fields.CharField(required=True)
+    has_logout = fields.BooleanField(default=False)
+

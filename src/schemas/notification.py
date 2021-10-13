@@ -62,7 +62,11 @@ class NotificationSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
-    user_id = fields.Int(required=True)
+    users = fields.List(fields.Int(), required=True,
+                        validate=is_not_blank,
+                        error_messages={
+                            'validator_failed': 'Must be not empty'
+                        })
 
     from_service = fields.Str(required=True, validate=validate.OneOf([
         ServiceEnum.RINZ_MUSIC
