@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 from src.utils.response import make_response
@@ -7,7 +6,7 @@ from src.constants import Constants
 
 
 class ExceptionUnknownError(BadRequestException):
-    def __init__(self, message=Constants.MSG_NOT_FOUND, *args: object) -> None:
+    def __init__(self, *args: object) -> None:
         super().__init__(*args)
         self.response = make_response(
             status=Constants.STATUS_NOT_OK,

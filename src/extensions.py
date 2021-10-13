@@ -1,13 +1,25 @@
 # -*- coding: utf-8 -*-
+import os
+
 from flask_redis import Redis
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask_sqlalchemy import SQLAlchemy
+import firebase_admin
 
 # Redis cache
-redis_cache = Redis()
-# Redis user info, will initialized in app
-redis_cluster = None # RedisCluster(startup_nodes=DefaultConfig.REDIS_USERS_STARTUP_NODES,
-                    #         decode_responses=True)
+from rediscluster import RedisCluster
 
-db = SQLAlchemy()
+from src.config import DefaultConfig
+
+redis_cache = Redis()
+
+# Redis user info, will initialized in app
+redis_cluster = RedisCluster(startup_nodes=DefaultConfig.REDIS_CLUSTER,
+                             decode_responses=True)
+
+redis_global = RedisCluster(startup_nodes=DefaultConfig.REDIS_GLOBAL,
+                            decode_responses=True)
+
+firebase_credentials = firebase_admin.credentials.Certificate(os.getcwd() + "/keys/firebase.json")
+
+# db = SQLAlchemy()
 jobs = BackgroundScheduler(daemon=True)

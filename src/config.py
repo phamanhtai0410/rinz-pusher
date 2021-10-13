@@ -21,7 +21,7 @@ class BaseConfig(object):
 
 class DefaultConfig(BaseConfig):
     DEBUG = True
-    PREFIX = '/v1/template'
+    PREFIX = '/v1/push'
     # Flask-babel: http://pythonhosted.org/Flask-Babel/
     ACCEPT_LANGUAGES = ['vi']
     BABEL_DEFAULT_LOCALE = 'en'
@@ -30,9 +30,9 @@ class DefaultConfig(BaseConfig):
     CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
     CELERY_TASK_RESULT_EXPIRES = os.getenv('CELERY_TASK_RESULT_EXPIRES')
     CELERY_TASK_RESULT_EXPIRES = int(CELERY_TASK_RESULT_EXPIRES) if CELERY_TASK_RESULT_EXPIRES else 600
-    CELERY_DEFAULT_QUEUE = 'service-template'
+    CELERY_DEFAULT_QUEUE = 'service-push-queue'
     CELERY_ROUTES = {
-        'template': {'queue': 'service-template'}
+        'template': {'queue': 'service-push-queue'}
     }
     CELERY_TRACK_STARTED = "True"
 
@@ -44,10 +44,17 @@ class DefaultConfig(BaseConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
 
+    # Redis for local service
     REDIS_URL = os.getenv('REDIS_URL')
-    REDIS_USERS_STARTUP_NODES = json.loads(os.getenv('REDIS_USERS_STARTUP_NODES', default='[]'))
 
-    MONGODB_URI = os.getenv('MONGODB_URI')
+    # Redis cluster for all service in RinZ: Ex: music, farm, network, .v.v.
+    REDIS_GLOBAL = json.loads(os.getenv('REDIS_GLOBAL', default='[]'))
+
+    # Redis cluster for group service
+    REDIS_CLUSTER = json.loads(os.getenv('REDIS_CLUSTER', default='[]'))
+
+    MONGODB_URI = os.getenv('MONGODB_GLOBAL')
+
     CACHE_SUB = ''
     INSIDE_APIKEY = os.getenv('INSIDE_APIKEY')
     CACHING = True

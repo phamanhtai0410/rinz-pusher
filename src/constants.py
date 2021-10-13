@@ -10,16 +10,17 @@ class Constants(object):
     LIMIT_REQUEST_TIME = 10
     # Interval time between two times call the same function, in second
     INTERVAL_BETWEEN_CALLS = 25
-    # Message
-    MSG_REQUIRED_AUTH = 'Vui lòng đăng nhập để tiếp tục'
+
     # Response status
     STATUS_OK = 1
     STATUS_NOT_OK = 0
-    # messgae
 
+    # Message
     MSG_NOT_FOUND = 'not found'
     MSG_UNKNOWN_ERROR = 'unknown error'
-    MSG_SUCCCESS = 'success'
+    MSG_SUCCESS = 'success'
+    MSG_REQUIRED_AUTH = 'auth is required'
+
     # Error code
     CODE_NOT_E = ''
     ERROR_NOT_FOUND = 'ERROR_NOT_FOUND'

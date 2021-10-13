@@ -11,7 +11,6 @@ from sqlalchemy.types import TypeDecorator
 from sentry_sdk import capture_exception
 from traceback import print_exc
 from src.decorators.cache import cache_id, cache_filter
-from src.extensions import db
 from src.utils.format import get_current_time
 from src.utils.validates import is_oid
 
@@ -34,26 +33,26 @@ class JsonType(TypeDecorator):
 
 
 class Base():
-
-    @classmethod
-    def commit_db(cls):
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            capture_exception(e)
-            print_exc()
-
-    @classmethod
-    def insert(cls, payload):
-        try:
-            db.session.add(payload)
-            db.session.commit()
-            return payload
-        except:
-            db.session.rollback()
-            capture_exception()
-            print_exc()
+    #
+    # @classmethod
+    # def commit_db(cls):
+    #     try:
+    #         db.session.commit()
+    #     except Exception as e:
+    #         db.session.rollback()
+    #         capture_exception(e)
+    #         print_exc()
+    #
+    # @classmethod
+    # def insert(cls, payload):
+    #     try:
+    #         db.session.add(payload)
+    #         db.session.commit()
+    #         return payload
+    #     except:
+    #         db.session.rollback()
+    #         capture_exception()
+    #         print_exc()
 
     def to_dict(self):
         return {c.key: getattr(self, c.key)

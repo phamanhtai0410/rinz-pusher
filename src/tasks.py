@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
+import traceback
 
+import firebase_admin
 import sentry_sdk
 from celery import Celery
 from flask import Flask
 from pymodm import connect
 from sentry_sdk.integrations.flask import FlaskIntegration
-from sentry_sdk import capture_message
+from sentry_sdk import capture_message, capture_exception
 
 from .config import DefaultConfig
-from .extensions import redis_cache
+from .extensions import redis_cache, firebase_credentials
 from .utils.logger import Logger
 
 
@@ -42,12 +44,20 @@ def configure_extensions(app):
     # flask-sqlalchemy
     # db.init_app(app)
     Logger.debug('Connect with Mysql successfully')
+    try:
+        firebase_admin.initialize_app(firebase_credentials)
+        Logger.debug('Init firebase admin done')
+    except:
+        capture_exception()
+        traceback.print_exc()
 
     connect(DefaultConfig.MONGODB_URI, connect=False)
+
     print('Connect with MongoDB successfully')
 
     # Redis
     redis_cache.init_app(app)
+
     Logger.debug('Init Redis cache successfully')
 
     # Sentry

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 
-from src.constants import Constants
 from src.exceptions.auth import ExceptionRequiredAuth
-from src.extensions import redis_cluster
+from src.extensions import redis_global
 from flask import request
 from sentry_sdk import capture_exception
 import jwt
@@ -19,7 +18,7 @@ def verify_token():
 
     rq_user_token = rq_user_token.split(' ')[1]
     # Get user token on Redis user info
-    token_existed = redis_cluster.get("token:{}".format(rq_user_token))
+    token_existed = redis_global.get("token:{}".format(rq_user_token))
     user_info = None
     if token_existed:  # In case user info exists, decode it
         try:

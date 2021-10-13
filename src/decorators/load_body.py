@@ -4,6 +4,7 @@ from flask import request, g
 from marshmallow import ValidationError
 
 from src.exceptions.missing import ExceptionMissing
+from src.exceptions.unknown_error import ExceptionUnknownError
 
 
 def load_data(BaseSchema):
@@ -25,19 +26,26 @@ def load_data(BaseSchema):
             except ValidationError as err:
                 errors = err.messages
                 msg = ''
-                if isinstance(errors, str):
-                    msg = errors
+
                 if isinstance(errors, list) and isinstance(errors[0], dict):
                     field, msg = errors[0].items()[0]
                 if isinstance(errors, dict) and len(errors.items()) > 0:
                     field, msg = list(errors.items())[0]
                     if isinstance(msg, list):
                         msg = msg[0]
+
+                if err.messages.get('_schema'):
+                    errors = {'field': err.messages.get('_schema')}
+
                 if not msg:
                     msg = str(errors)
+                if not isinstance(msg, str):
+                    msg = str(msg)
                 raise ExceptionMissing(message=msg, errors=errors)
+
             except:
-                raise
+                raise ExceptionUnknownError
+
             return f(*args, **kwargs)
 
         return wrapper
