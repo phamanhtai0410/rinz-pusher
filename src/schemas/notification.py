@@ -48,7 +48,7 @@ class MessageSchema(Schema):
                              error_messages={
                                  'validator_failed': 'Must be not empty'
                              })
-    image = fields.Str(required=True,
+    image = fields.URL(required=True,
                        validate=is_not_blank,
                        error_messages={
                            'validator_failed': 'Must be not empty'
