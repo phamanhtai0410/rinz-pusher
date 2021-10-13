@@ -39,8 +39,6 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_error_handlers(app)
     configure_logging_level()
     configure_jobs(app)
-    # with app.app_context():
-        # db.create_all()  # Create sql tables for our data models
     return app
 
 

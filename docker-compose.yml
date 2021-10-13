@@ -7,23 +7,32 @@ services:
     container_name: service
     build: ./
     restart: on-failure
-    volumes: 
+
+    volumes:
       - ./:/webapps/service
       - /var/log/apps/:/var/log/apps/
+
     ports:
       - 5011:5005
-    #env_file:
-    # - ./local.env
+
     networks:
      - same-network
-    #command: python /webapps/loyalty/manage.py run
+
     command: supervisord -n -c /etc/supervisor.d/supervisord.conf
 
-  # flower:
-  #   image: mher/flower
-  #   command: ["flower", "--broker=redis://83.136.252.174:6379/2", "--port=8888"]
-  #   ports:
-  #      - 8888:8888
+  workers:
+    # Name the service container
+    image: worker-name-service
+    container_name: worker-name-service
+    build: ./
+    restart: on-failure
+    volumes:
+      - ./:/webapps/service
+      - /var/log/apps/:/var/log/apps/
+    networks:
+      - same-network
+
+    command: supervisord -n -c /etc/supervisor.d/worker-supervisord.conf
 
 networks:
   same-network:

@@ -86,20 +86,31 @@ def cache_filter(timeout=86400, key_prefix='common', key_fields=[], options=[], 
         @wraps(f)
         def wrapper(*args, **kwargs):
             _filter = dict()
+
             # TODO sort keys
+
+            key_fields.sort()
+
             for key_field in key_fields:
                 _filter[key_field] = kwargs.get(key_field)
+
             _options = kwargs.get('options', {})
+
             for option in options:
                 _filter[option] = _options.get(option)
 
             key = "%s%s:%s" % (DefaultConfig.CACHE_SUB,
                                key_prefix, dumps(_filter))
+
             output = get_data_by_key(key)
+
             if output:
                 return load_json(output)
+
             output = f(*args, **kwargs)
+
             set_data_by_key(key, output)
+
             return output
 
         return wrapper

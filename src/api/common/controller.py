@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 from datetime import datetime
 from src.decorators.handle_response import handle_response
-from src.exceptions import ExeceptionNotFound
+from src.exceptions import ExceptionNotFound
 
 from bson import ObjectId
 from flask import g
@@ -18,7 +18,7 @@ def cl_health_check():
     data = g.data
     Logger.debug("call health_check", data)
     if data:
-        raise ExeceptionNotFound
+        raise ExceptionNotFound
 
     return ExampleResponse.load_response({
         '_id': ObjectId(),

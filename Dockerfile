@@ -15,6 +15,7 @@ COPY requirements.txt /
 RUN pip --no-cache-dir install --upgrade pip setuptools
 RUN pip --no-cache-dir install -r requirements.txt && mkdir -p /var/log/apps
 
+COPY conf/uwsgi.ini /etc/uwsgi/
 COPY conf/supervisor/ /etc/supervisor.d/
 COPY . /webapps/service
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import json
 from functools import wraps
 
 from src.constants import Constants
+from src.exceptions.auth import ExceptionRequiredAuth
 from src.extensions import redis_cluster
 from flask import request
 from sentry_sdk import capture_exception
@@ -44,11 +44,8 @@ def auth_user():
                 return f(*args, **decorated_kwargs)
             user_info = verify_token()
             if not user_info:
-                return make_response(
-                    msg=Constants.MSG_REQUIRED_AUTH,
-                    status=Constants.STATUS_NOT_OK,
-                    error_code=Constants.ERROR_AUTH
-                )
+                raise ExceptionRequiredAuth
+
             decorated_kwargs = {**kwargs, 'user_info': user_info.get('payload', {})}
             return f(*args, **decorated_kwargs)
 
@@ -66,7 +63,7 @@ def get_user():
         @wraps(f)
         def wrapper(*args, **kwargs):
             if not request:  # Outside flask app context
-                decorated_kwargs = {**kwargs, 'user_info': None}
+                decorated_kwargs = {**kwargs, 'user_info': {}}
                 return f(*args, **decorated_kwargs)
             user_info = verify_token()
             if not user_info:

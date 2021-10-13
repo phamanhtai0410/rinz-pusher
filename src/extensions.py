@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask_redis import Redis
 from apscheduler.schedulers.background import BackgroundScheduler
-from rediscluster import RedisCluster
-from .config import DefaultConfig
 from flask_sqlalchemy import SQLAlchemy
 
 # Redis cache
