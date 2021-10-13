@@ -3,8 +3,8 @@ version: '3'
 services: 
   backend:
     # Name the service container
-    image: service
-    container_name: service
+    image: service-pusher
+    container_name: service-pusher
     build: ./
     restart: on-failure
 
@@ -13,7 +13,7 @@ services:
       - /var/log/apps/:/var/log/apps/
 
     ports:
-      - 5011:5005
+      - 4066:5005
 
     networks:
      - same-network
@@ -22,8 +22,8 @@ services:
 
   workers:
     # Name the service container
-    image: worker-name-service
-    container_name: worker-name-service
+    image: worker-pusher-service
+    container_name: worker-pusher-service
     build: ./
     restart: on-failure
     volumes:
