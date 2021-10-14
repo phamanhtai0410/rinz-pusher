@@ -26,9 +26,11 @@ def firebase_unsubscribe_task(topic: str, tokens: list):
 def firebase_send_topic_use_condition(condition, topic, notification):
     _message = notification.get('message')
     preview = _message.get('preview', {})
-    payload = notification.get('payload', {})
-    payload["navigate"] = dumps(notification.get('navigate', {}))
-    payload["bulk_id"] = notification.get('bulk_id', '')
+    payload = {
+        "navigate": dumps(notification.get('navigate', {})),
+        "bulk_id": notification.get('bulk_id', ''),
+        'from_service': notification.get('from_service', 'rinz')
+    }
 
     data_payload = {}
     for x in payload.keys():
