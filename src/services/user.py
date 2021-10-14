@@ -54,8 +54,8 @@ class UserService(object):
 
     @staticmethod
     @handle_exception()
-    def mark_notification(user_id: int, notification_id: str, from_service: str):
+    def mark_notification(user_id: int, notification_id: str, from_service: str, bulk_id=None):
         """
             mark notification of user; if notification = * => mark all
         """
-        mark_notification_task(user_id=user_id, notification_id=notification_id, from_service=from_service)
+        mark_notification_task(user_id=user_id, notification_id=notification_id, from_service=from_service, bulk_id=None)

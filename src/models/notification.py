@@ -15,3 +15,4 @@ class Notification(BaseMG):
     navigate = fields.DictField(required=True)
     message = fields.DictField(required=True)
     from_service = fields.CharField(required=True)
+    bulk_id = fields.CharField(blank=True, default='')

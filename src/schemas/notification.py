@@ -3,7 +3,7 @@ from marshmallow import Schema, fields, EXCLUDE, validate, validates, Validation
 from src.enums.screen import ScreenRZMusicEnum
 from src.enums.service import ServiceEnum, ServiceForNoification
 from src.schemas.base import BaseResponse
-from src.utils.validates import is_not_blank, is_oid_or_all
+from src.utils.validates import is_not_blank, is_oid_or_all, is_oid
 
 
 class NavigationSchema(Schema):
@@ -129,3 +129,15 @@ class MarkNotificationSchema(Schema):
                                  error_messages={
                                      'validator_failed': 'Must be a objectid or "*"'
                                  })
+
+
+class MarkFirebaseSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    from_service = fields.Str(required=True, validate=validate.OneOf(ServiceForNoification.enums()))
+    bulk_id = fields.Str(required=True,
+                         validate=is_oid,
+                         error_messages={
+                             'validator_failed': 'Must be a objectid'
+                         })

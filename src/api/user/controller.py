@@ -4,7 +4,7 @@ from src.decorators import auth_user
 from src.decorators.handle_response import handle_response
 from src.decorators.load_body import load_data
 from src.enums.service import ServiceEnum
-from src.schemas.notification import NotificationsResponseSchema, MarkNotificationSchema
+from src.schemas.notification import NotificationsResponseSchema, MarkNotificationSchema, MarkFirebaseSchema
 from src.services.user import UserService
 
 
@@ -42,6 +42,25 @@ def mark_notification_controller(user_info):
         user_id=user_id,
         from_service=from_service,
         notification_id=notification_id
+    )
+
+    return {}
+
+
+@handle_response()
+@load_data(MarkFirebaseSchema)
+@auth_user()
+def mark_notification_controller(user_info):
+    data = g.data
+    user_id = user_info.get('id')
+    from_service = data.get('from_service')
+    bulk_id = data.get('bulk_id')
+
+    UserService.mark_notification(
+        user_id=user_id,
+        from_service=from_service,
+        notification_id=None,
+        bulk_id=bulk_id
     )
 
     return {}

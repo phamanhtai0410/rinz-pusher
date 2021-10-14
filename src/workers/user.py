@@ -28,14 +28,16 @@ def insert_notifications_task(users: list, notification: dict):
 
 @celery.task(name='push.tasks.user.insert_notification', rate_limit='100/s')
 @handle_exception()
-def mark_notification_task(user_id: int, notification_id: str, from_service: str):
+def mark_notification_task(user_id: int, notification_id: str, from_service: str, bulk_id=None):
     filter = {
         'user_id': user_id,
         'has_marked': False
     }
-
-    if notification_id != "*":
-        filter['_id'] = ObjectId(notification_id)
+    if bulk_id:
+        filter['bulk_id'] = bulk_id
+    else:
+        if notification_id != "*":
+            filter['_id'] = ObjectId(notification_id)
 
     if from_service != ServiceForNoification.RINZ:
         filter['from_service'] = from_service
