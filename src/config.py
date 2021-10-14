@@ -57,4 +57,4 @@ class DefaultConfig(BaseConfig):
 
     CACHE_SUB = ''
     INSIDE_APIKEY = os.getenv('INSIDE_APIKEY')
-    CACHING = True
+    CACHING = os.getenv('CACHING', False)
