@@ -50,7 +50,7 @@ def mark_notification_controller(user_info):
 @handle_response()
 @load_data(MarkFirebaseSchema)
 @auth_user()
-def mark_notification_controller(user_info):
+def mark_notification_by_bulk_controller(user_info):
     data = g.data
     user_id = user_info.get('id')
     from_service = data.get('from_service')
@@ -59,7 +59,7 @@ def mark_notification_controller(user_info):
     UserService.mark_notification(
         user_id=user_id,
         from_service=from_service,
-        notification_id=None,
+        notification_id='',
         bulk_id=bulk_id
     )
 

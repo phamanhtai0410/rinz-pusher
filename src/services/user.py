@@ -58,4 +58,4 @@ class UserService(object):
         """
             mark notification of user; if notification = * => mark all
         """
-        mark_notification_task(user_id=user_id, notification_id=notification_id, from_service=from_service, bulk_id=None)
+        mark_notification_task(user_id=user_id, notification_id=notification_id, from_service=from_service, bulk_id=bulk_id)
