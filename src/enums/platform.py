@@ -5,3 +5,4 @@ class PlatformEnum(BaseEnum):
     ANDROID = 'android'
     IOS = 'ios'
     WEBSITE = 'website'
+    UNKNOWN = ' unknown'
