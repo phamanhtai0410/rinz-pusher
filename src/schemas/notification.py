@@ -1,8 +1,9 @@
 from marshmallow import Schema, fields, EXCLUDE, validate, validates, ValidationError, validates_schema
 
 from src.enums.screen import ScreenRZMusicEnum
-from src.enums.service import ServiceEnum
-from src.utils.validates import is_not_blank
+from src.enums.service import ServiceEnum, ServiceForNoification
+from src.schemas.base import BaseResponse
+from src.utils.validates import is_not_blank, is_oid_or_all
 
 
 class NavigationSchema(Schema):
@@ -95,3 +96,36 @@ class NotificationSchema(Schema):
                         f'href must be required'
                     ]
                 })
+
+
+class NotificationResponseSchema(Schema, BaseResponse):
+    class Meta:
+        unknown = EXCLUDE
+
+    _id = fields.Str()
+    user_id = fields.Int()
+    from_service = fields.Str()
+    navigate = fields.Nested(NavigationSchema(), required=True)
+    message = fields.Nested(MessageSchema(), required=True)
+    has_marked = fields.Bool()
+    created_time = fields.Float()
+
+
+class NotificationsResponseSchema(Schema, BaseResponse):
+    class Meta:
+        unknown = EXCLUDE
+
+    notifications = fields.List(fields.Nested(NotificationResponseSchema()), missing=[])
+    has_ended = fields.Bool(missing=True)
+
+
+class MarkNotificationSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    from_service = fields.Str(required=True, validate=validate.OneOf(ServiceForNoification.enums()))
+    notification_id = fields.Str(required=True,
+                                 validate=is_oid_or_all,
+                                 error_messages={
+                                     'validator_failed': 'Must be a objectid or "*"'
+                                 })

@@ -1,7 +1,10 @@
 from flask import Blueprint
 
-from src.api.user.controller import send_to_user_controller
+from src.api.user.controller import get_notifications_controller, \
+    mark_notification_controller
 
 rest_user = Blueprint('rest_user', __name__, url_prefix='/user')
 
-# rest_user.add_url_rule('', methods=['POST'], view_func=send_to_user_controller)
+rest_user.add_url_rule('notifications', methods=['GET'], view_func=get_notifications_controller)
+
+rest_user.add_url_rule('mark', methods=['PUT'], view_func=mark_notification_controller)

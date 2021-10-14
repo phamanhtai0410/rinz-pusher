@@ -39,7 +39,10 @@ class Logger(object):
                 args_and_kwargs['args'] = json.dumps(args, default=json_encode_hook)
             if kwargs:
                 args_and_kwargs['kwargs'] = json.dumps(args, default=json_encode_hook)
-            msg = json.dumps(msg, default=json_encode_hook)
+            try:
+                msg = json.dumps(msg, default=json_encode_hook)
+            except:
+                msg = str(msg)
             print(f'{Bcolors.OKGREEN}[DEBUG] - {datetime.utcnow().strftime("%H:%M:%S.%f %d-%m-%Y")} {Bcolors.ENDC}')
             print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')
@@ -63,7 +66,10 @@ class Logger(object):
                 args_and_kwargs['args'] = json.dumps(args, default=json_encode_hook)
             if kwargs:
                 args_and_kwargs['kwargs'] = json.dumps(args, default=json_encode_hook)
-            msg = json.dumps(msg, default=json_encode_hook)
+            try:
+                msg = json.dumps(msg, default=json_encode_hook)
+            except:
+                msg = str(msg)
             print(f'{Bcolors.FAIL}[ERROR] - {datetime.utcnow().strftime("%H:%M:%S.%f %d-%m-%Y")} {Bcolors.ENDC}')
             print(f'{Bcolors.BOLD} {caller.filename} : {caller.lineno} {Bcolors.ENDC}')
             print(f'{Bcolors.OKCYAN}          {msg} {Bcolors.ENDC}')

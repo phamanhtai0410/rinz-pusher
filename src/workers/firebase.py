@@ -23,7 +23,7 @@ def firebase_unsubscribe_task(topic: str, tokens: list):
 
 
 @celery.task(name='push.tasks.firebase.send_topic_use_condition', rate_limit='100/s')
-def firebase_send_topic_use_condition(condition, notification):
+def firebase_send_topic_use_condition(condition, topic, notification):
     _message = notification.get('message')
     preview = _message.get('preview', {})
     payload = notification.get('payload', {})
@@ -33,7 +33,7 @@ def firebase_send_topic_use_condition(condition, notification):
     data_payload = {}
     for x in payload.keys():
         data_payload[x] = payload[x]
-
+    Logger.debug('condition', condition, data_payload, topic)
     if preview.get("image"):
         message = messaging.Message(
             notification=messaging.Notification(
@@ -46,7 +46,7 @@ def firebase_send_topic_use_condition(condition, notification):
                 aps=messaging.Aps(mutable_content=1)
             ), fcm_options=messaging.APNSFCMOptions(
                 image=preview.get("image"))),
-            condition=condition,
+            # condition=condition,
         )
     else:
         message = messaging.Message(
@@ -58,8 +58,12 @@ def firebase_send_topic_use_condition(condition, notification):
             apns=messaging.APNSConfig(payload=messaging.APNSPayload(
                 aps=messaging.Aps(mutable_content=1)
             )),
-            condition=condition,
+            # condition=condition,
         )
+    if topic:
+        message.topic = topic
+    if condition:
+        message.condition = condition
     response = messaging.send(message)
     Logger.debug(response)
     return "success"

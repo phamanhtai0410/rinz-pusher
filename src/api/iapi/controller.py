@@ -7,7 +7,6 @@ from src.schemas.notification import NotificationSchema
 from src.services.firebase import FirebaseService
 from src.services.user import UserService
 from src.utils.generator import gen_oid
-from src.utils.logger import Logger
 from src.workers.user import insert_notifications_task
 
 
@@ -18,12 +17,8 @@ def send_to_user_controller():
     users = data.get('users', [])
     del data['users']
     data['bulk_id'] = gen_oid()
-    data['navigate']['is_record'] = True
-    notifications = [{
-        'user_id': x,
-        **data
-    } for x in data.get('users', [])]
-    insert_notifications_task(notifications=notifications)
+    # data['navigate']['no_record'] = True
+    insert_notifications_task(users=users, notification=data)
     FirebaseService.send_message_to_users(users, data)
     return {}
 
@@ -34,7 +29,7 @@ def send_to_user_no_record_controller():
     data = g.data
     users = data.get('users', [])
     del data['users']
-    data['navigate']['is_record'] = False
+    data['navigate']['no_record'] = True
     FirebaseService.send_message_to_users(users, data)
     return {}
 

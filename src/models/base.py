@@ -9,7 +9,6 @@ from pymodm import fields, MongoModel
 from sqlalchemy import inspect, text
 from sqlalchemy.types import TypeDecorator
 from sentry_sdk import capture_exception
-from traceback import print_exc
 from src.decorators.cache import cache_id, cache_filter
 from src.utils.format import get_current_time
 from src.utils.validates import is_oid
@@ -116,7 +115,7 @@ class Base():
             return [x.to_dict() for x in values]
 
         if with_cache:
-            _keys = filter.keys()
+            _keys = list(filter.keys())
             __option_keys = options.keys()
 
             @cache_filter(
@@ -138,7 +137,7 @@ class Base():
             return {}
 
         if with_cache:
-            _keys = filter.keys()
+            _keys = list(filter.keys())
             __option_keys = options.keys()
 
             @cache_filter(
@@ -247,7 +246,7 @@ class BaseMG(MongoModel):
                 filter: dict = {},
                 with_cache=True):
         try:
-            _keys = filter.keys()
+            _keys = list(filter.keys())
 
             def get_db():
                 value = cls.objects.get(filter)
@@ -281,7 +280,7 @@ class BaseMG(MongoModel):
                       options={},
                       with_cache=True):
         try:
-            _keys = filter.keys()
+            _keys = list(filter.keys())
             __option_keys = options.keys()
 
             def get_db():
