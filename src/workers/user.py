@@ -26,9 +26,15 @@ def insert_notifications_task(users: list, notification: dict):
     return 'success'
 
 
-@celery.task(name='push.tasks.user.insert_notification', rate_limit='100/s')
+@celery.task(name='push.tasks.user.mark_notification_task', rate_limit='100/s')
 @handle_exception()
 def mark_notification_task(user_id: int, notification_id: str, from_service: str, bulk_id=None):
+    Logger.debug({
+        'user_id': user_id,
+        'notification_id': notification_id,
+        'from_service': from_service,
+        'bulk_id': bulk_id
+    })
     filter = {
         'user_id': user_id,
         'has_marked': False
