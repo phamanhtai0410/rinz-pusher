@@ -3,7 +3,7 @@ from flask import g, request
 from src.decorators import auth_user
 from src.decorators.handle_response import handle_response
 from src.decorators.load_body import load_data
-from src.enums.service import ServiceEnum
+from src.enums.service import ServiceEnum, ServiceForNoification
 from src.schemas.notification import NotificationsResponseSchema, MarkNotificationSchema, MarkFirebaseSchema
 from src.services.user import UserService
 
@@ -64,3 +64,20 @@ def mark_notification_by_bulk_controller(user_info):
     )
 
     return {}
+
+
+@handle_response()
+@auth_user()
+def get_new_notification(user_info):
+    user_id = user_info.get('id')
+    from_service = request.args.get('from_service')
+    if from_service not in ServiceForNoification.enums():
+        return {
+            'total_new_notifications': 0,
+            'total_new_messages': 0
+        }
+    total_new_notifications = UserService.get_new_notification(user_id=user_id, from_service=from_service)
+    return {
+        'total_new_notifications': total_new_notifications,
+        'total_new_messages': 0
+    }

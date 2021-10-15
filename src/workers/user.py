@@ -2,7 +2,6 @@ from bson import ObjectId
 
 from src.enums.service import ServiceForNoification
 from src.exceptions.handler import handle_exception
-from src.extensions import redis_global
 from src.helpers.user import count_notification
 from src.models.notification import Notification
 from src.tasks import celery

@@ -1,5 +1,6 @@
 from src.exceptions.handler import handle_exception
 from src.helpers.firebase import gen_key_topic_for_user
+from src.helpers.user import get_total_notifications
 from src.models.notification import Notification
 from src.workers.device import insert_device_task, remove_device_task
 from src.workers.firebase import firebase_subscribe_task, firebase_unsubscribe_task
@@ -7,6 +8,10 @@ from src.workers.user import mark_notification_task
 
 
 class UserService(object):
+    @staticmethod
+    @handle_exception()
+    def get_new_notification(user_id: int, from_service: str):
+        return get_total_notifications(user_id=user_id, from_service=from_service)
 
     @staticmethod
     @handle_exception()

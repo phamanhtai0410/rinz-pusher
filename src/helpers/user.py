@@ -21,3 +21,10 @@ def count_notification(user_id: int, from_service: str, number: int = 1):
         redis_global.set(count_key, 0)
     else:
         redis_global.incr(count_key, number)
+
+
+@handle_exception(default=0)
+def get_total_notifications(user_id: int, from_service: str):
+    count_key = gen_key_count_notification_of_user(user_id=user_id, from_service=from_service)
+    number = redis_global.get(count_key)
+    return int(number)
