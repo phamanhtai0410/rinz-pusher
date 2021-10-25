@@ -21,7 +21,7 @@ class FirebaseService(object):
         else:
             condition = cls.gen_condition_for_users(users)
 
-        firebase_send_topic_use_condition(
+        firebase_send_topic_use_condition.delay(
             condition=condition,
             topic=topic,
             notification=notification

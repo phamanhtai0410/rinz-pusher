@@ -32,6 +32,12 @@ class DefaultConfig(BaseConfig):
     CELERY_TASK_RESULT_EXPIRES = int(CELERY_TASK_RESULT_EXPIRES) if CELERY_TASK_RESULT_EXPIRES else 600
     CELERY_DEFAULT_QUEUE = 'service-push-queue'
     CELERY_ROUTES = {
+        'push.tasks.remove_device': {'queue': 'service-push-queue'},
+        'push.tasks.firebase.subscribe': {'queue': 'service-push-queue'},
+        'push.tasks.firebase.unsubscribe': {'queue': 'service-push-queue'},
+        'push.tasks.firebase.send_topic_use_condition': {'queue': 'service-push-queue'},
+        'push.tasks.user.insert_notification': {'queue': 'service-push-queue'},
+        'push.tasks.user.mark_notification_task': {'queue': 'service-push-queue'},
         'template': {'queue': 'service-push-queue'}
     }
     CELERY_TRACK_STARTED = "True"

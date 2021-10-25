@@ -18,7 +18,7 @@ def send_to_user_controller():
     del data['users']
     data['bulk_id'] = gen_oid()
     # data['navigate']['no_record'] = True
-    insert_notifications_task(users=users, notification=data)
+    insert_notifications_task.delay(users=users, notification=data)
     FirebaseService.send_message_to_users(users, data)
     return {}
 

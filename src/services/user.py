@@ -24,7 +24,7 @@ class UserService(object):
         # gen topic name
         topic = gen_key_topic_for_user(user_id=user_id)
         # TODO add delay
-        firebase_subscribe_task(topic, [fcm_token])
+        firebase_subscribe_task.delay(topic, [fcm_token])
 
     @staticmethod
     @handle_exception()
@@ -32,12 +32,12 @@ class UserService(object):
         user_id = device.get('user_id')
         fcm_token = device.get('fcm_token')
         # remove status or device
-        remove_device_task(user_id=user_id, fcm_token=fcm_token)
+        remove_device_task.delay(user_id=user_id, fcm_token=fcm_token)
         # gen name for topic
         topic = gen_key_topic_for_user(user_id=user_id)
 
         # TODO add delay
-        firebase_unsubscribe_task(topic, [fcm_token])
+        firebase_unsubscribe_task.delay(topic, [fcm_token])
 
     @staticmethod
     @handle_exception(default=[])
@@ -63,5 +63,5 @@ class UserService(object):
         """
             mark notification of user; if notification = * => mark all
         """
-        mark_notification_task(user_id=user_id, notification_id=notification_id, from_service=from_service,
+        mark_notification_task.delay(user_id=user_id, notification_id=notification_id, from_service=from_service,
                                bulk_id=bulk_id)

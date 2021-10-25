@@ -45,7 +45,7 @@ def configure_extensions(app):
     # db.init_app(app)
     Logger.debug('Connect with Mysql successfully')
     try:
-        firebase_admin.initialize_app(firebase_credentials)
+        # firebase_admin.initialize_app(firebase_credentials)
         Logger.debug('Init firebase admin done')
     except:
         capture_exception()
